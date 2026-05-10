@@ -161,13 +161,9 @@ const DEFAULT_DIARY = [
   { id:3, date:'2026.04.20', title:'🎨 굿즈샵 v1 시안 완성',            content:'브랜드 컬러팔레트 7종 확정. 치즈 오렌지 + 따뜻한 종이 베이스.' },
 ];
 
-(function setupShopRender() {
+function renderGoods(products) {
   const grid = document.getElementById('goodsGrid');
   if (!grid) return;
-  let products;
-  try { products = JSON.parse(localStorage.getItem(ADMIN_KEYS.PRODUCTS)) || DEFAULT_PRODUCTS; }
-  catch { products = DEFAULT_PRODUCTS; }
-
   grid.innerHTML = products.map(p => `
     <article class="good-card${p.featured ? ' featured' : ''} in">
       ${p.badge ? `<span class="badge-new">${p.badge}</span>` : ''}
@@ -187,15 +183,11 @@ const DEFAULT_DIARY = [
       </div>
     </article>
   `).join('');
-})();
+}
 
-(function setupDiaryRender() {
+function renderDiaryFeed(diary) {
   const feed = document.getElementById('diaryFeed');
   if (!feed) return;
-  let diary;
-  try { diary = JSON.parse(localStorage.getItem(ADMIN_KEYS.DIARY)) || DEFAULT_DIARY; }
-  catch { diary = DEFAULT_DIARY; }
-
   feed.innerHTML = diary.map(d => `
     <article class="diary-item in">
       <time>${d.date}</time>
@@ -203,6 +195,28 @@ const DEFAULT_DIARY = [
       <p>${d.content}</p>
     </article>
   `).join('');
+}
+
+// data.json(GitHub) → localStorage(관리자 로컬) → 기본값 순으로 시도
+(function setupDynamicRender() {
+  const needsShop  = !!document.getElementById('goodsGrid');
+  const needsDiary = !!document.getElementById('diaryFeed');
+  if (!needsShop && !needsDiary) return;
+
+  // 1) data.json fetch 시도 (GitHub Pages에 배포된 데이터)
+  fetch('./data.json?t=' + Date.now())
+    .then(r => r.ok ? r.json() : Promise.reject())
+    .then(data => {
+      if (needsShop  && data.products) renderGoods(data.products);
+      if (needsDiary && data.diary)    renderDiaryFeed(data.diary);
+    })
+    .catch(() => {
+      // 2) fallback: localStorage → defaults
+      const products = (() => { try { return JSON.parse(localStorage.getItem(ADMIN_KEYS.PRODUCTS)) || DEFAULT_PRODUCTS; } catch { return DEFAULT_PRODUCTS; } })();
+      const diary    = (() => { try { return JSON.parse(localStorage.getItem(ADMIN_KEYS.DIARY))    || DEFAULT_DIARY;    } catch { return DEFAULT_DIARY;    } })();
+      if (needsShop)  renderGoods(products);
+      if (needsDiary) renderDiaryFeed(diary);
+    });
 })();
 
 // ----- 9) 현재 페이지 nav 활성 탭 표시 -----

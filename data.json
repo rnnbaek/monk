@@ -1,0 +1,14 @@
+{
+  "products": [
+    { "id": 1, "featured": true,  "badge": "신상", "emoji": "🐱", "emojiStack": "🧀", "color": "#F4A24C", "name": "먹방 스티커팩",  "description": "몽구의 시그니처 먹방 컷 6종 스티커", "price": "4500", "buyLink": "" },
+    { "id": 2, "featured": false, "badge": "",    "emoji": "📮", "emojiStack": "✉️", "color": "#FFF4DE", "name": "엽서 4종 세트",  "description": "치즈 노을 · 산타 모자 · 식빵 · 시크한 표정", "price": "2000", "buyLink": "" },
+    { "id": 3, "featured": false, "badge": "",    "emoji": "🔑", "emojiStack": "👑", "color": "#A8C9A0", "name": "킹몽구 키링",    "description": "왕관 쓴 몽구 아크릴 키링 50×50mm", "price": "9000", "buyLink": "" },
+    { "id": 4, "featured": false, "badge": "",    "emoji": "📛", "emojiStack": "🐾", "color": "#E66B7A", "name": "치즈태비 뱃지",  "description": "금속 핀뱃지 · 가방·옷에 콕", "price": "5000", "buyLink": "" }
+  ],
+  "diary": [
+    { "id": 1, "date": "2026.05.05", "title": "🍪 새 먹방 촬영 — 어린이날 쿠키", "content": "몽구가 쿠키 모양 빵을 한참 노려보다가 결국 한 입. 영상 곧 올라가요." },
+    { "id": 2, "date": "2026.04.28", "title": "📦 키링 1차 입고",                  "content": "아크릴 키링 30개 입고. 검수에서 7개 탈락… 다시 발주 넣었어요." },
+    { "id": 3, "date": "2026.04.20", "title": "🎨 굿즈샵 v1 시안 완성",            "content": "브랜드 컬러팔레트 7종 확정. 치즈 오렌지 + 따뜻한 종이 베이스." }
+  ],
+  "updatedAt": "2026-05-10T00:00:00.000Z"
+}

@@ -61,6 +61,12 @@
       border-top:1px solid rgba(251,247,240,.08)}
     .sidebar-link,.btn-logout{display:flex;align-items:center;gap:8px;font-size:13px;
       padding:8px 12px;border-radius:8px;transition:color .15s;text-align:left}
+    .sync-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;
+      font-family:var(--mono);padding:5px 10px;border-radius:999px;margin-top:2px}
+    .sync-badge.idle{background:rgba(251,247,240,.08);color:rgba(251,247,240,.35)}
+    .sync-badge.syncing{background:rgba(244,162,76,.2);color:var(--cheese)}
+    .sync-badge.ok{background:rgba(168,201,160,.2);color:var(--sage)}
+    .sync-badge.error{background:rgba(230,107,122,.2);color:var(--strawberry)}
     .sidebar-link{color:rgba(251,247,240,.45)}
     .sidebar-link:hover{color:rgba(251,247,240,.8)}
     .btn-logout{color:rgba(251,247,240,.35)}
@@ -196,6 +202,7 @@
       <button class="tab-btn" data-tab="settings">⚙️ 설정</button>
     </nav>
     <div class="sidebar-bottom">
+      <div class="sync-badge idle" id="syncBadge">● 미연결</div>
       <a class="sidebar-link" href="index.html" target="_blank">↗ 사이트 보기</a>
       <button class="btn-logout" id="logoutBtn">로그아웃</button>
     </div>
@@ -321,16 +328,31 @@
         <p id="pwMsg" style="font-size:13px;margin-top:10px"></p>
       </div>
 
-      <div class="settings-section">
-        <h3>📤 JSON 내보내기</h3>
-        <p style="font-size:13px;color:var(--mocha);margin:0 0 14px;line-height:1.55">
-          현재 상품·일기 데이터를 JSON으로 복사합니다.<br>
-          Claude Code에 <b>"이 JSON으로 shop.html, diary.html 업데이트해줘"</b> 라고 붙여넣으면 전체 반영돼요.
+      <div class="settings-section" style="border-color:rgba(244,162,76,.4)">
+        <h3>🚀 GitHub 자동 배포</h3>
+        <p style="font-size:13px;color:var(--mocha);margin:0 0 14px;line-height:1.6">
+          저장할 때마다 GitHub에 자동 커밋 → 1~2분 후 모든 방문자에게 반영됩니다.<br>
+          토큰은 이 브라우저에만 저장되며 GitHub에 올라가지 않아요.
         </p>
-        <button class="btn-add" id="btnExport">📋 클립보드에 복사</button>
-        <pre id="exportOutput" style="display:none;margin-top:14px;background:var(--paper);
-          border-radius:10px;padding:14px;font-size:11px;overflow:auto;max-height:260px;
-          font-family:var(--mono);line-height:1.5"></pre>
+        <div class="form-grid" style="max-width:500px">
+          <div class="form-group full">
+            <label>GitHub Personal Access Token</label>
+            <input type="password" id="ghToken" placeholder="github_pat_..." autocomplete="off" />
+          </div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:14px;align-items:center">
+          <button class="btn-save" id="btnSaveToken">연결</button>
+          <button class="btn-cancel" id="btnTestToken">연결 테스트</button>
+          <button class="btn-delete" id="btnRemoveToken" style="display:none">토큰 삭제</button>
+        </div>
+        <p id="ghConnectMsg" style="font-size:13px;margin-top:10px"></p>
+        <div id="ghGuide" style="margin-top:16px;background:var(--paper);border-radius:10px;padding:14px;font-size:12px;line-height:1.7;color:var(--mocha)">
+          <b style="color:var(--bean)">토큰 발급 방법</b><br>
+          GitHub.com → 우측 상단 프로필 → Settings<br>
+          → Developer settings → Personal access tokens → Fine-grained tokens<br>
+          → Generate new token → Repository: <code style="background:rgba(244,162,76,.2);padding:1px 5px;border-radius:4px">monk</code>
+          → Contents: <code style="background:rgba(244,162,76,.2);padding:1px 5px;border-radius:4px">Read and write</code>
+        </div>
       </div>
 
       <div class="settings-section" style="border-color:rgba(230,107,122,.3)">
@@ -348,7 +370,8 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const KEYS = { PW:'mongu_admin_pw', PRODUCTS:'mongu_products', DIARY:'mongu_diary', SESSION:'mongu_admin_session' };
+const KEYS = { PW:'mongu_admin_pw', PRODUCTS:'mongu_products', DIARY:'mongu_diary', SESSION:'mongu_admin_session', GH_TOKEN:'mongu_gh_token' };
+const GH   = { owner:'rnnbaek', repo:'monk', path:'data.json', branch:'main' };
 const DEFAULT_PW = 'mongu2026';
 
 const DEFAULT_PRODUCTS = [
@@ -362,6 +385,58 @@ const DEFAULT_DIARY = [
   { id:2, date:'2026.04.28', title:'📦 키링 1차 입고',                  content:'아크릴 키링 30개 입고. 검수에서 7개 탈락… 다시 발주 넣었어요.' },
   { id:3, date:'2026.04.20', title:'🎨 굿즈샵 v1 시안 완성',            content:'브랜드 컬러팔레트 7종 확정. 치즈 오렌지 + 따뜻한 종이 베이스.' },
 ];
+
+// ── GitHub sync ──
+function toBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
+  return btoa(binary);
+}
+
+function ghHeaders(token) {
+  return {
+    'Authorization': `Bearer ${token}`,
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28',
+    'Content-Type': 'application/json',
+  };
+}
+
+function setSyncBadge(state) {
+  const el = document.getElementById('syncBadge');
+  if (!el) return;
+  const map = { idle:'● 미연결', syncing:'↻ 배포 중...', ok:'✓ 배포됨', error:'✕ 오류' };
+  el.className = 'sync-badge ' + state;
+  el.textContent = map[state] || map.idle;
+}
+
+async function syncToGitHub() {
+  const token = localStorage.getItem(KEYS.GH_TOKEN);
+  if (!token) return;
+  setSyncBadge('syncing');
+  const payload = JSON.stringify({ products: getProducts(), diary: getDiary(), updatedAt: new Date().toISOString() }, null, 2);
+  const content = toBase64(payload);
+  try {
+    // 현재 SHA 조회 (업데이트에 필요)
+    const getRes = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`, { headers: ghHeaders(token) });
+    let sha;
+    if (getRes.ok) sha = (await getRes.json()).sha;
+
+    const putRes = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`, {
+      method: 'PUT',
+      headers: ghHeaders(token),
+      body: JSON.stringify({ message: `관리자: 데이터 업데이트 (${new Date().toLocaleString('ko-KR')})`, content, branch: GH.branch, ...(sha ? { sha } : {}) }),
+    });
+    if (!putRes.ok) { const e = await putRes.json(); throw new Error(e.message); }
+    setSyncBadge('ok');
+    toast('GitHub 배포 완료 🚀 (1~2분 후 전체 반영)');
+  } catch (err) {
+    setSyncBadge('error');
+    toast('배포 실패: ' + err.message);
+    console.error('[GitHub sync]', err);
+  }
+}
 
 // ── helpers ──
 async function hashPw(pw) {
@@ -388,6 +463,7 @@ function toast(msg) {
   if (!localStorage.getItem(KEYS.PW)) {
     localStorage.setItem(KEYS.PW, await hashPw(DEFAULT_PW));
   }
+  updateTokenUI();
   if (sessionStorage.getItem(KEYS.SESSION) === '1') showDash();
 })();
 
@@ -476,6 +552,7 @@ window.deleteProduct = id => {
   if (!confirm('이 상품을 삭제할까요?')) return;
   saveProducts(getProducts().filter(x=>x.id!==id));
   renderProducts(); toast('삭제됐어요 🗑');
+  syncToGitHub();
 };
 
 document.getElementById('btnSaveProduct').addEventListener('click', () => {
@@ -502,6 +579,7 @@ document.getElementById('btnSaveProduct').addEventListener('click', () => {
   document.getElementById('productForm').hidden=true;
   renderProducts();
   toast(wasEdit ? '수정됐어요 ✅' : '추가됐어요 🎉');
+  syncToGitHub();
 });
 
 // ── diary ──
@@ -547,6 +625,7 @@ window.deleteDiary = id => {
   if (!confirm('이 일기를 삭제할까요?')) return;
   saveDiary(getDiary().filter(x=>x.id!==id));
   renderDiary(); toast('삭제됐어요 🗑');
+  syncToGitHub();
 };
 
 document.getElementById('btnSaveDiary').addEventListener('click', () => {
@@ -564,9 +643,59 @@ document.getElementById('btnSaveDiary').addEventListener('click', () => {
   document.getElementById('diaryForm').hidden=true;
   renderDiary();
   toast(wasEdit ? '수정됐어요 ✅' : '추가됐어요 🎉');
+  syncToGitHub();
 });
 
-// ── settings ──
+// ── settings: GitHub token ──
+function updateTokenUI() {
+  const stored = localStorage.getItem(KEYS.GH_TOKEN);
+  const msg = document.getElementById('ghConnectMsg');
+  const removeBtn = document.getElementById('btnRemoveToken');
+  const guide = document.getElementById('ghGuide');
+  if (stored) {
+    msg.style.color = 'var(--sage)';
+    msg.textContent = '✅ 토큰이 연결되어 있어요. 저장할 때마다 자동 배포됩니다.';
+    removeBtn.style.display = 'inline-flex';
+    guide.style.display = 'none';
+    setSyncBadge('ok');
+  } else {
+    msg.textContent = '';
+    removeBtn.style.display = 'none';
+    guide.style.display = 'block';
+    setSyncBadge('idle');
+  }
+}
+
+document.getElementById('btnSaveToken').addEventListener('click', () => {
+  const val = document.getElementById('ghToken').value.trim();
+  const msg = document.getElementById('ghConnectMsg');
+  if (!val) { msg.style.color='var(--strawberry)'; msg.textContent='토큰을 입력하세요.'; return; }
+  localStorage.setItem(KEYS.GH_TOKEN, val);
+  document.getElementById('ghToken').value = '';
+  updateTokenUI();
+  toast('토큰이 저장됐어요 🔑');
+});
+
+document.getElementById('btnTestToken').addEventListener('click', async () => {
+  const token = document.getElementById('ghToken').value.trim() || localStorage.getItem(KEYS.GH_TOKEN);
+  const msg = document.getElementById('ghConnectMsg');
+  if (!token) { msg.style.color='var(--strawberry)'; msg.textContent='먼저 토큰을 입력하세요.'; return; }
+  msg.style.color = 'var(--mocha)'; msg.textContent = '테스트 중...';
+  try {
+    const res = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}`, { headers: ghHeaders(token) });
+    if (res.ok) { msg.style.color='var(--sage)'; msg.textContent='✅ 연결 성공! 저장 버튼을 눌러 적용하세요.'; }
+    else { const e=await res.json(); throw new Error(e.message); }
+  } catch (err) { msg.style.color='var(--strawberry)'; msg.textContent='❌ 실패: ' + err.message; }
+});
+
+document.getElementById('btnRemoveToken').addEventListener('click', () => {
+  if (!confirm('토큰을 삭제할까요? 자동 배포가 중단됩니다.')) return;
+  localStorage.removeItem(KEYS.GH_TOKEN);
+  updateTokenUI();
+  toast('토큰이 삭제됐어요');
+});
+
+// ── settings: password ──
 document.getElementById('btnChangePw').addEventListener('click', async () => {
   const a = document.getElementById('newPw').value;
   const b = document.getElementById('confirmPw').value;
