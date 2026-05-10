@@ -10,356 +10,269 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🔐%3C/text%3E%3C/svg%3E" />
   <style>
     :root {
-      --cheese:#F4A24C; --cream:#FFF4DE; --paper:#FBF7F0;
-      --strawberry:#E66B7A; --sage:#A8C9A0; --bean:#3B2A1F; --mocha:#7A5A44;
-      --font:'Noto Sans KR',sans-serif; --mono:'IBM Plex Mono',monospace;
-      --r:12px; --ease:cubic-bezier(.2,.8,.2,1);
+      --cheese:#F4A24C;--cream:#FFF4DE;--paper:#FBF7F0;
+      --strawberry:#E66B7A;--sage:#A8C9A0;--bean:#3B2A1F;--mocha:#7A5A44;
+      --font:'Noto Sans KR',sans-serif;--mono:'IBM Plex Mono',monospace;
+      --r:12px;
     }
     *,*::before,*::after{box-sizing:border-box}
     html,body{margin:0;padding:0;height:100%}
     body{font-family:var(--font);color:var(--bean);background:var(--paper);-webkit-font-smoothing:antialiased}
     button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
-    input,textarea,select{font:inherit}
+    input,textarea{font:inherit}
     a{color:inherit;text-decoration:none}
 
-    /* ── Login ── */
-    .login-wrap{min-height:100vh;display:grid;place-items:center;
-      background:radial-gradient(circle at 30% 20%,rgba(244,162,76,.14),transparent 50%),
-                radial-gradient(circle at 80% 80%,rgba(230,107,122,.09),transparent 40%),var(--paper)}
+    /* Login */
+    #loginScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;
+      background:radial-gradient(circle at 30% 20%,rgba(244,162,76,.14),transparent 50%),var(--paper)}
     .login-card{background:#fff;border-radius:20px;padding:40px 36px;
       box-shadow:0 20px 60px rgba(59,42,31,.12);width:100%;max-width:360px;text-align:center}
     .login-logo{font-size:48px;margin-bottom:8px}
     .login-card h1{font-size:22px;font-weight:900;margin:0 0 4px;letter-spacing:-.5px}
-    .login-card > p{font-size:13px;color:var(--mocha);margin:0 0 28px}
-    .login-card input[type=password]{width:100%;padding:12px 16px;border:1.5px solid rgba(59,42,31,.15);
-      border-radius:var(--r);font-size:15px;outline:none;transition:border-color .15s;margin-bottom:12px}
-    .login-card input[type=password]:focus{border-color:var(--cheese)}
+    .login-card .sub{font-size:13px;color:var(--mocha);margin:0 0 28px}
+    .login-card input{width:100%;padding:12px 16px;border:1.5px solid rgba(59,42,31,.15);
+      border-radius:var(--r);font-size:15px;outline:none;transition:border-color .15s;margin-bottom:12px;display:block}
+    .login-card input:focus{border-color:var(--cheese)}
     .btn-login{width:100%;background:var(--cheese);color:var(--bean);padding:13px;border-radius:var(--r);
-      font-size:15px;font-weight:800;transition:transform .15s var(--ease)}
-    .btn-login:hover{transform:translateY(-1px)}
-    .login-error{margin-top:12px;font-size:13px;color:var(--strawberry)}
+      font-size:15px;font-weight:800}
+    .login-error{margin-top:12px;font-size:13px;color:var(--strawberry);display:none}
     .login-hint{margin-top:14px;font-size:11px;color:rgba(59,42,31,.35);font-family:var(--mono)}
 
-    /* ── Dashboard layout ── */
-    .dash{display:grid;grid-template-columns:220px 1fr;min-height:100vh}
+    /* Dashboard */
+    #dashboard{display:none;grid-template-columns:220px 1fr;min-height:100vh}
+    #dashboard.show{display:grid}
 
-    /* ── Sidebar ── */
+    /* Sidebar */
     .sidebar{background:var(--bean);color:rgba(251,247,240,.85);
       display:flex;flex-direction:column;padding:24px 14px;
       position:sticky;top:0;height:100vh;overflow-y:auto}
-    .sidebar-brand{display:flex;align-items:center;gap:10px;
-      font-size:15px;font-weight:900;color:var(--cheese);margin-bottom:28px;padding:0 4px}
-    .brand-dot{width:32px;height:32px;background:var(--cheese);border-radius:50%;
+    .sb-brand{display:flex;align-items:center;gap:10px;
+      font-size:15px;font-weight:900;color:var(--cheese);margin-bottom:28px}
+    .sb-dot{width:32px;height:32px;background:var(--cheese);border-radius:50%;
       display:grid;place-items:center;font-size:16px;color:var(--bean);flex-shrink:0}
-    .sidebar nav{display:flex;flex-direction:column;gap:3px;flex:1}
+    .sb-nav{display:flex;flex-direction:column;gap:3px;flex:1}
     .tab-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;
       font-size:14px;font-weight:500;color:rgba(251,247,240,.55);text-align:left;
       transition:background .15s,color .15s}
     .tab-btn:hover{background:rgba(251,247,240,.08);color:rgba(251,247,240,.9)}
-    .tab-btn.active{background:rgba(244,162,76,.2);color:var(--cheese);font-weight:700}
-    .sidebar-bottom{display:flex;flex-direction:column;gap:6px;padding-top:14px;
+    .tab-btn.on{background:rgba(244,162,76,.2);color:var(--cheese);font-weight:700}
+    .sb-bottom{display:flex;flex-direction:column;gap:6px;padding-top:14px;
       border-top:1px solid rgba(251,247,240,.08)}
-    .sidebar-link,.btn-logout{display:flex;align-items:center;gap:8px;font-size:13px;
+    .sb-link{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(251,247,240,.45);
+      padding:8px 12px;border-radius:8px;transition:color .15s}
+    .sb-link:hover{color:rgba(251,247,240,.8)}
+    .btn-logout{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(251,247,240,.35);
       padding:8px 12px;border-radius:8px;transition:color .15s;text-align:left}
-    .sync-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;
-      font-family:var(--mono);padding:5px 10px;border-radius:999px;margin-top:2px}
-    .sync-badge.idle{background:rgba(251,247,240,.08);color:rgba(251,247,240,.35)}
-    .sync-badge.syncing{background:rgba(244,162,76,.2);color:var(--cheese)}
-    .sync-badge.ok{background:rgba(168,201,160,.2);color:var(--sage)}
-    .sync-badge.error{background:rgba(230,107,122,.2);color:var(--strawberry)}
-    .sidebar-link{color:rgba(251,247,240,.45)}
-    .sidebar-link:hover{color:rgba(251,247,240,.8)}
-    .btn-logout{color:rgba(251,247,240,.35)}
     .btn-logout:hover{color:var(--strawberry)}
+    .sync-pill{display:inline-block;font-size:11px;font-family:var(--mono);
+      padding:4px 10px;border-radius:999px;margin-bottom:8px}
+    .sync-pill.idle{background:rgba(251,247,240,.08);color:rgba(251,247,240,.35)}
+    .sync-pill.busy{background:rgba(244,162,76,.2);color:var(--cheese)}
+    .sync-pill.ok{background:rgba(168,201,160,.2);color:var(--sage)}
+    .sync-pill.err{background:rgba(230,107,122,.2);color:var(--strawberry)}
 
-    /* ── Main ── */
+    /* Main */
     .dash-main{padding:32px 28px;max-width:860px}
     .tab-panel{display:none}
-    .tab-panel.active{display:block}
-    .panel-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-    .panel-header h2{font-size:22px;font-weight:900;margin:0;letter-spacing:-.5px}
+    .tab-panel.on{display:block}
+    .ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
+    .ph h2{font-size:22px;font-weight:900;margin:0;letter-spacing:-.5px}
 
-    /* ── Buttons ── */
-    .btn-add{background:var(--cheese);color:var(--bean);padding:9px 18px;border-radius:999px;
-      font-size:13px;font-weight:800;transition:transform .15s var(--ease)}
-    .btn-add:hover{transform:translateY(-1px)}
-    .btn-save{background:var(--cheese);color:var(--bean);padding:10px 20px;
-      border-radius:var(--r);font-size:14px;font-weight:800}
-    .btn-cancel{background:rgba(59,42,31,.08);color:var(--mocha);padding:10px 20px;
-      border-radius:var(--r);font-size:14px;font-weight:500}
-    .btn-edit{background:rgba(59,42,31,.07);color:var(--mocha);padding:6px 12px;
-      border-radius:8px;font-size:12px;font-weight:700}
-    .btn-delete{background:rgba(230,107,122,.12);color:var(--strawberry);padding:6px 12px;
-      border-radius:8px;font-size:12px;font-weight:700}
-    .btn-danger{background:var(--strawberry);color:#fff;padding:10px 20px;
-      border-radius:var(--r);font-size:14px;font-weight:800}
+    /* Buttons */
+    .btn-add{background:var(--cheese);color:var(--bean);padding:9px 18px;border-radius:999px;font-size:13px;font-weight:800}
+    .btn-save{background:var(--cheese);color:var(--bean);padding:10px 20px;border-radius:var(--r);font-size:14px;font-weight:800}
+    .btn-cancel{background:rgba(59,42,31,.08);color:var(--mocha);padding:10px 20px;border-radius:var(--r);font-size:14px}
+    .btn-edit{background:rgba(59,42,31,.07);color:var(--mocha);padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700}
+    .btn-del{background:rgba(230,107,122,.12);color:var(--strawberry);padding:6px 12px;border-radius:8px;font-size:12px;font-weight:700}
+    .btn-danger{background:var(--strawberry);color:#fff;padding:10px 20px;border-radius:var(--r);font-size:14px;font-weight:800}
+    .btn-ghost{background:rgba(59,42,31,.08);color:var(--mocha);padding:10px 20px;border-radius:var(--r);font-size:14px}
 
-    /* ── Notice ── */
+    /* Notice */
     .notice{background:rgba(168,201,160,.18);border:1px solid var(--sage);border-radius:var(--r);
       padding:12px 16px;font-size:13px;line-height:1.55;margin-bottom:18px}
 
-    /* ── Item list ── */
-    .item-list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
-    .item-row{background:#fff;border:1px solid rgba(59,42,31,.07);border-radius:var(--r);
-      padding:14px 16px;display:flex;align-items:center;gap:14px}
-    .item-emoji{font-size:26px;flex-shrink:0}
-    .item-info{flex:1;min-width:0}
-    .item-name{font-weight:800;font-size:15px}
-    .item-desc{font-size:12px;color:var(--mocha);margin-top:2px;
-      white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .item-price{font-family:var(--mono);font-size:14px;font-weight:700;flex-shrink:0}
-    .item-actions{display:flex;gap:6px;flex-shrink:0}
-    .item-badge{font-size:10px;font-weight:800;background:var(--strawberry);color:#fff;
+    /* Item list */
+    .list{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+    .row{background:#fff;border:1px solid rgba(59,42,31,.07);border-radius:var(--r);
+      padding:14px 16px;display:flex;align-items:center;gap:12px}
+    .row-emoji{font-size:26px;flex-shrink:0}
+    .row-info{flex:1;min-width:0}
+    .row-name{font-weight:800;font-size:15px}
+    .row-desc{font-size:12px;color:var(--mocha);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .row-price{font-family:var(--mono);font-size:14px;font-weight:700;flex-shrink:0}
+    .row-acts{display:flex;gap:6px;flex-shrink:0}
+    .badge{font-size:10px;font-weight:800;background:var(--strawberry);color:#fff;
       padding:2px 7px;border-radius:999px;margin-left:6px;vertical-align:middle}
-    .item-badge.featured{background:var(--sage);color:var(--bean)}
+    .badge.feat{background:var(--sage);color:var(--bean)}
 
-    /* ── Form card ── */
-    .form-card{background:#fff;border:1.5px solid var(--cheese);border-radius:16px;
-      padding:24px;margin-bottom:20px}
+    /* Diary row */
+    .drow{background:#fff;border:1px solid rgba(59,42,31,.07);border-left:4px solid var(--cheese);
+      border-radius:var(--r);padding:14px 16px;display:flex;gap:12px}
+    .drow-body{flex:1;min-width:0}
+    .drow-date{font-family:var(--mono);font-size:11px;color:var(--mocha);margin-bottom:4px}
+    .drow-title{font-weight:800;font-size:15px}
+    .drow-content{font-size:12px;color:var(--mocha);margin-top:4px;line-height:1.5}
+
+    /* Form */
+    .form-card{background:#fff;border:1.5px solid var(--cheese);border-radius:16px;padding:24px;margin-bottom:20px}
     .form-card h3{font-size:16px;font-weight:900;margin:0 0 18px}
-    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .form-group{display:flex;flex-direction:column;gap:6px}
-    .form-group.full{grid-column:1/-1}
-    .form-group label{font-size:12px;font-weight:700;color:var(--mocha);letter-spacing:.3px}
-    .form-group input,.form-group textarea,.form-group select{
-      padding:10px 12px;border:1.5px solid rgba(59,42,31,.12);border-radius:10px;
+    .fg{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+    .f{display:flex;flex-direction:column;gap:6px}
+    .f.full{grid-column:1/-1}
+    .f label{font-size:12px;font-weight:700;color:var(--mocha)}
+    .f input,.f textarea{padding:10px 12px;border:1.5px solid rgba(59,42,31,.12);border-radius:10px;
       font-size:14px;outline:none;transition:border-color .15s;background:var(--paper)}
-    .form-group input:focus,.form-group textarea:focus{border-color:var(--cheese);background:#fff}
-    .form-group textarea{resize:vertical;min-height:80px}
-    .form-group input[type=color]{padding:4px 6px;height:42px;cursor:pointer}
-    .form-check{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer}
-    .form-check input{width:16px;height:16px;accent-color:var(--cheese)}
-    .form-actions{display:flex;gap:10px;margin-top:18px}
+    .f input:focus,.f textarea:focus{border-color:var(--cheese);background:#fff}
+    .f textarea{resize:vertical;min-height:80px}
+    .f input[type=color]{padding:4px 6px;height:42px;cursor:pointer}
+    .f-check{display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer}
+    .f-check input{width:16px;height:16px;accent-color:var(--cheese)}
+    .f-acts{display:flex;gap:10px;margin-top:18px}
 
-    /* ── Diary rows ── */
-    .diary-row{background:#fff;border:1px solid rgba(59,42,31,.07);
-      border-left:4px solid var(--cheese);border-radius:var(--r);
-      padding:14px 16px;display:flex;align-items:flex-start;gap:12px}
-    .diary-body{flex:1;min-width:0}
-    .diary-date{font-family:var(--mono);font-size:11px;color:var(--mocha);margin-bottom:4px}
-    .diary-title{font-weight:800;font-size:15px}
-    .diary-content{font-size:12px;color:var(--mocha);margin-top:4px;line-height:1.5}
+    /* Settings */
+    .ss{background:#fff;border:1px solid rgba(59,42,31,.08);border-radius:var(--r);padding:20px;margin-bottom:14px}
+    .ss h3{font-size:15px;font-weight:800;margin:0 0 14px}
+    .ss p{font-size:13px;color:var(--mocha);margin:0 0 14px;line-height:1.6}
 
-    /* ── Settings ── */
-    .settings-section{background:#fff;border:1px solid rgba(59,42,31,.08);
-      border-radius:var(--r);padding:20px;margin-bottom:14px}
-    .settings-section h3{font-size:15px;font-weight:800;margin:0 0 14px}
+    /* Empty */
+    .empty{text-align:center;padding:48px 24px;color:var(--mocha);font-size:14px}
 
-    /* ── Empty ── */
-    .empty-state{text-align:center;padding:48px 24px;color:var(--mocha)}
-    .empty-icon{font-size:48px;margin-bottom:12px}
-
-    /* ── Toast ── */
+    /* Toast */
     .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
       background:var(--bean);color:#fff;padding:12px 22px;border-radius:999px;
       font-size:14px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.2);
-      transition:transform .3s var(--ease);z-index:999;white-space:nowrap;pointer-events:none}
+      transition:transform .3s cubic-bezier(.2,.8,.2,1);z-index:999;pointer-events:none}
     .toast.show{transform:translateX(-50%) translateY(0)}
 
-    /* ── Mobile ── */
     @media(max-width:720px){
-      .dash{grid-template-columns:1fr;grid-template-rows:auto 1fr}
-      .sidebar{position:static;height:auto;flex-direction:row;flex-wrap:wrap;
-        padding:10px 12px;gap:6px}
-      .sidebar-brand{margin-bottom:0}
-      .sidebar nav{flex-direction:row;flex:none;gap:3px}
+      #dashboard.show{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+      .sidebar{position:static;height:auto;flex-direction:row;flex-wrap:wrap;padding:10px 12px;gap:6px}
+      .sb-brand{margin-bottom:0}
+      .sb-nav{flex-direction:row;flex:none;gap:3px}
       .tab-btn{padding:8px 10px;font-size:12px}
-      .sidebar-bottom{flex-direction:row;border-top:0;padding-top:0;margin-left:auto}
+      .sb-bottom{flex-direction:row;border-top:0;padding-top:0;margin-left:auto}
       .dash-main{padding:16px}
-      .form-grid{grid-template-columns:1fr}
-      .form-group.full{grid-column:1}
+      .fg{grid-template-columns:1fr}
+      .f.full{grid-column:1}
     }
   </style>
 </head>
 <body>
 
-<!-- ── Login ── -->
-<div id="loginScreen" class="login-wrap">
+<!-- 로그인 -->
+<div id="loginScreen">
   <div class="login-card">
     <div class="login-logo">🔐</div>
     <h1>관리자 로그인</h1>
-    <p>킹몽구 &amp; 누나 관리자 페이지</p>
-    <form id="loginForm" autocomplete="off">
-      <input type="password" id="pwInput" placeholder="비밀번호" autocomplete="current-password" />
+    <p class="sub">킹몽구 &amp; 누나 관리자 페이지</p>
+    <form id="loginForm">
+      <input type="password" id="pwInput" placeholder="비밀번호" />
       <button class="btn-login" type="submit">로그인</button>
     </form>
-    <p id="loginError" class="login-error" hidden>비밀번호가 틀렸어요 🙅</p>
+    <p class="login-error" id="loginErr">비밀번호가 틀렸어요 🙅</p>
     <p class="login-hint">기본 비밀번호: mongu2026</p>
   </div>
 </div>
 
-<!-- ── Dashboard ── -->
-<div id="dashboard" class="dash" hidden>
-
+<!-- 대시보드 -->
+<div id="dashboard">
   <aside class="sidebar">
-    <div class="sidebar-brand">
-      <div class="brand-dot">🧀</div>
-      관리자
-    </div>
-    <nav>
-      <button class="tab-btn active" data-tab="products">🛍 상품 관리</button>
+    <div class="sb-brand"><div class="sb-dot">🧀</div>관리자</div>
+    <nav class="sb-nav">
+      <button class="tab-btn on" data-tab="products">🛍 상품 관리</button>
       <button class="tab-btn" data-tab="diary">📔 일기 관리</button>
       <button class="tab-btn" data-tab="settings">⚙️ 설정</button>
     </nav>
-    <div class="sidebar-bottom">
-      <div class="sync-badge idle" id="syncBadge">● 미연결</div>
-      <a class="sidebar-link" href="index.html" target="_blank">↗ 사이트 보기</a>
-      <button class="btn-logout" id="logoutBtn">로그아웃</button>
+    <div class="sb-bottom">
+      <div class="sync-pill idle" id="syncPill">● 미연결</div>
+      <a class="sb-link" href="index.html" target="_blank">↗ 사이트 보기</a>
+      <button class="btn-logout" id="btnLogout">로그아웃</button>
     </div>
   </aside>
 
   <main class="dash-main">
 
-    <!-- 상품 관리 -->
-    <div id="tab-products" class="tab-panel active">
-      <div class="panel-header">
-        <h2>🛍 상품 관리</h2>
-        <button class="btn-add" id="btnAddProduct">+ 상품 추가</button>
-      </div>
-      <div class="notice">
-        💡 저장한 상품은 <b>이 브라우저</b>의 굿즈샵에 즉시 반영됩니다.
-        모든 방문자에게 보이려면 <b>설정 → JSON 내보내기</b> 후 Claude Code에 붙여넣으세요.
-      </div>
+    <!-- 상품 -->
+    <div id="tab-products" class="tab-panel on">
+      <div class="ph"><h2>🛍 상품 관리</h2><button class="btn-add" id="btnNewProduct">+ 상품 추가</button></div>
+      <div class="notice">💡 저장하면 GitHub에 자동 배포돼요 (토큰 연결 시). 설정 탭에서 토큰을 먼저 입력하세요.</div>
 
-      <div class="form-card" id="productForm" hidden>
-        <h3 id="productFormTitle">새 상품 추가</h3>
-        <input type="hidden" id="productId" />
-        <div class="form-grid">
-          <div class="form-group">
-            <label>상품명 *</label>
-            <input type="text" id="pName" placeholder="예: 먹방 스티커팩" />
-          </div>
-          <div class="form-group">
-            <label>가격 (원) *</label>
-            <input type="number" id="pPrice" placeholder="4500" min="0" />
-          </div>
-          <div class="form-group full">
-            <label>설명</label>
-            <input type="text" id="pDesc" placeholder="예: 몽구의 시그니처 먹방 컷 6종 스티커" />
-          </div>
-          <div class="form-group">
-            <label>대표 이모지 *</label>
-            <input type="text" id="pEmoji" placeholder="🐱" maxlength="4" />
-          </div>
-          <div class="form-group">
-            <label>보조 이모지</label>
-            <input type="text" id="pEmojiStack" placeholder="🧀" maxlength="4" />
-          </div>
-          <div class="form-group">
-            <label>배경색</label>
-            <input type="color" id="pColor" value="#F4A24C" />
-          </div>
-          <div class="form-group">
-            <label>배지 (신상 · SALE 등)</label>
-            <input type="text" id="pBadge" placeholder="신상" maxlength="10" />
-          </div>
-          <div class="form-group full">
-            <label>구매 링크 (스마트스토어 URL 등)</label>
-            <input type="url" id="pBuyLink" placeholder="https://smartstore.naver.com/..." />
-          </div>
-          <div class="form-group full">
-            <label class="form-check">
-              <input type="checkbox" id="pFeatured" />
-              대표 상품으로 설정 (크게 표시)
-            </label>
-          </div>
+      <div class="form-card" id="productForm" style="display:none">
+        <h3 id="pFormTitle">새 상품</h3>
+        <input type="hidden" id="pId" />
+        <div class="fg">
+          <div class="f"><label>상품명 *</label><input type="text" id="pName" placeholder="먹방 스티커팩" /></div>
+          <div class="f"><label>가격 (원) *</label><input type="number" id="pPrice" placeholder="4500" /></div>
+          <div class="f full"><label>설명</label><input type="text" id="pDesc" placeholder="몽구의 시그니처 먹방 컷 6종 스티커" /></div>
+          <div class="f"><label>이모지 (대)</label><input type="text" id="pEmoji" placeholder="🐱" maxlength="4" /></div>
+          <div class="f"><label>이모지 (소)</label><input type="text" id="pEStack" placeholder="🧀" maxlength="4" /></div>
+          <div class="f"><label>배경색</label><input type="color" id="pColor" value="#F4A24C" /></div>
+          <div class="f"><label>배지 (신상 · SALE)</label><input type="text" id="pBadge" placeholder="신상" maxlength="10" /></div>
+          <div class="f full"><label>구매 링크</label><input type="url" id="pLink" placeholder="https://smartstore.naver.com/..." /></div>
+          <div class="f full"><label class="f-check"><input type="checkbox" id="pFeatured" />대표 상품 (크게 표시)</label></div>
         </div>
-        <div class="form-actions">
+        <div class="f-acts">
           <button class="btn-save" id="btnSaveProduct">저장</button>
           <button class="btn-cancel" id="btnCancelProduct">취소</button>
         </div>
       </div>
 
-      <div class="item-list" id="productList"></div>
+      <div class="list" id="productList"></div>
     </div>
 
-    <!-- 일기 관리 -->
+    <!-- 일기 -->
     <div id="tab-diary" class="tab-panel">
-      <div class="panel-header">
-        <h2>📔 일기 관리</h2>
-        <button class="btn-add" id="btnAddDiary">+ 일기 추가</button>
-      </div>
+      <div class="ph"><h2>📔 일기 관리</h2><button class="btn-add" id="btnNewDiary">+ 일기 추가</button></div>
 
-      <div class="form-card" id="diaryForm" hidden>
-        <h3 id="diaryFormTitle">새 일기 추가</h3>
-        <input type="hidden" id="diaryId" />
-        <div class="form-grid">
-          <div class="form-group">
-            <label>날짜 *</label>
-            <input type="text" id="dDate" placeholder="2026.05.10" />
-          </div>
-          <div class="form-group full">
-            <label>제목 *</label>
-            <input type="text" id="dTitle" placeholder="🍪 새 먹방 촬영 — 어린이날 쿠키" />
-          </div>
-          <div class="form-group full">
-            <label>내용</label>
-            <textarea id="dContent" placeholder="오늘의 공방 이야기를 적어주세요."></textarea>
-          </div>
+      <div class="form-card" id="diaryForm" style="display:none">
+        <h3 id="dFormTitle">새 일기</h3>
+        <input type="hidden" id="dId" />
+        <div class="fg">
+          <div class="f"><label>날짜 *</label><input type="text" id="dDate" placeholder="2026.05.10" /></div>
+          <div class="f full"><label>제목 *</label><input type="text" id="dTitle" placeholder="🍪 새 먹방 촬영" /></div>
+          <div class="f full"><label>내용</label><textarea id="dContent" placeholder="오늘의 공방 이야기..."></textarea></div>
         </div>
-        <div class="form-actions">
+        <div class="f-acts">
           <button class="btn-save" id="btnSaveDiary">저장</button>
           <button class="btn-cancel" id="btnCancelDiary">취소</button>
         </div>
       </div>
 
-      <div class="item-list" id="diaryList"></div>
+      <div class="list" id="diaryList"></div>
     </div>
 
     <!-- 설정 -->
     <div id="tab-settings" class="tab-panel">
-      <div class="panel-header">
-        <h2>⚙️ 설정</h2>
+      <div class="ph"><h2>⚙️ 설정</h2></div>
+
+      <div class="ss" style="border-color:rgba(244,162,76,.4)">
+        <h3>🚀 GitHub 자동 배포</h3>
+        <p>저장마다 GitHub에 커밋 → 1~2분 후 모든 방문자에게 반영됩니다.<br>토큰은 이 브라우저에만 저장되고 GitHub엔 올라가지 않아요.</p>
+        <div class="fg" style="max-width:500px">
+          <div class="f full"><label>GitHub Personal Access Token</label>
+            <input type="password" id="ghToken" placeholder="github_pat_..." autocomplete="off" /></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+          <button class="btn-save" id="btnSaveToken">연결</button>
+          <button class="btn-ghost" id="btnTestToken">테스트</button>
+          <button class="btn-del" id="btnDelToken" style="display:none">토큰 삭제</button>
+        </div>
+        <p id="ghMsg" style="font-size:13px;margin-top:10px"></p>
       </div>
 
-      <div class="settings-section">
+      <div class="ss">
         <h3>🔑 비밀번호 변경</h3>
-        <div class="form-grid" style="max-width:460px">
-          <div class="form-group full">
-            <label>새 비밀번호</label>
-            <input type="password" id="newPw" placeholder="새 비밀번호" />
-          </div>
-          <div class="form-group full">
-            <label>비밀번호 확인</label>
-            <input type="password" id="confirmPw" placeholder="다시 입력" />
-          </div>
+        <div class="fg" style="max-width:460px">
+          <div class="f full"><label>새 비밀번호</label><input type="password" id="newPw" placeholder="새 비밀번호" /></div>
+          <div class="f full"><label>확인</label><input type="password" id="confPw" placeholder="다시 입력" /></div>
         </div>
-        <button class="btn-save" id="btnChangePw" style="margin-top:14px">변경</button>
+        <button class="btn-save" style="margin-top:14px" id="btnChangePw">변경</button>
         <p id="pwMsg" style="font-size:13px;margin-top:10px"></p>
       </div>
 
-      <div class="settings-section" style="border-color:rgba(244,162,76,.4)">
-        <h3>🚀 GitHub 자동 배포</h3>
-        <p style="font-size:13px;color:var(--mocha);margin:0 0 14px;line-height:1.6">
-          저장할 때마다 GitHub에 자동 커밋 → 1~2분 후 모든 방문자에게 반영됩니다.<br>
-          토큰은 이 브라우저에만 저장되며 GitHub에 올라가지 않아요.
-        </p>
-        <div class="form-grid" style="max-width:500px">
-          <div class="form-group full">
-            <label>GitHub Personal Access Token</label>
-            <input type="password" id="ghToken" placeholder="github_pat_..." autocomplete="off" />
-          </div>
-        </div>
-        <div style="display:flex;gap:10px;margin-top:14px;align-items:center">
-          <button class="btn-save" id="btnSaveToken">연결</button>
-          <button class="btn-cancel" id="btnTestToken">연결 테스트</button>
-          <button class="btn-delete" id="btnRemoveToken" style="display:none">토큰 삭제</button>
-        </div>
-        <p id="ghConnectMsg" style="font-size:13px;margin-top:10px"></p>
-        <div id="ghGuide" style="margin-top:16px;background:var(--paper);border-radius:10px;padding:14px;font-size:12px;line-height:1.7;color:var(--mocha)">
-          <b style="color:var(--bean)">토큰 발급 방법</b><br>
-          GitHub.com → 우측 상단 프로필 → Settings<br>
-          → Developer settings → Personal access tokens → Fine-grained tokens<br>
-          → Generate new token → Repository: <code style="background:rgba(244,162,76,.2);padding:1px 5px;border-radius:4px">monk</code>
-          → Contents: <code style="background:rgba(244,162,76,.2);padding:1px 5px;border-radius:4px">Read and write</code>
-        </div>
-      </div>
-
-      <div class="settings-section" style="border-color:rgba(230,107,122,.3)">
-        <h3 style="color:var(--strawberry)">🗑 데이터 초기화</h3>
-        <p style="font-size:13px;color:var(--mocha);margin:0 0 14px;line-height:1.55">
-          상품·일기를 기본값으로 되돌립니다. 되돌릴 수 없어요.
-        </p>
+      <div class="ss" style="border-color:rgba(230,107,122,.3)">
+        <h3 style="color:var(--strawberry)">🗑 초기화</h3>
+        <p>상품·일기를 기본값으로 되돌립니다. 되돌릴 수 없어요.</p>
         <button class="btn-danger" id="btnReset">기본값으로 초기화</button>
       </div>
     </div>
@@ -370,364 +283,338 @@
 <div class="toast" id="toast"></div>
 
 <script>
-const KEYS = { PW:'mongu_admin_pw', PRODUCTS:'mongu_products', DIARY:'mongu_diary', SESSION:'mongu_admin_session', GH_TOKEN:'mongu_gh_token' };
-const GH   = { owner:'rnnbaek', repo:'monk', path:'data.json', branch:'main' };
+// ── 상수 ──
+const K = {
+  PW:       'mongu_admin_pw',
+  PRODUCTS: 'mongu_products',
+  DIARY:    'mongu_diary',
+  TOKEN:    'mongu_gh_token',
+};
+const GH = { owner:'rnnbaek', repo:'monk', path:'data.json', branch:'main' };
 const DEFAULT_PW = 'mongu2026';
 
 const DEFAULT_PRODUCTS = [
-  { id:1, featured:true,  badge:'신상', emoji:'🐱', emojiStack:'🧀', color:'#F4A24C', name:'먹방 스티커팩',  description:'몽구의 시그니처 먹방 컷 6종 스티커', price:'4500', buyLink:'' },
-  { id:2, featured:false, badge:'',    emoji:'📮', emojiStack:'✉️', color:'#FFF4DE', name:'엽서 4종 세트',  description:'치즈 노을 · 산타 모자 · 식빵 · 시크한 표정', price:'2000', buyLink:'' },
-  { id:3, featured:false, badge:'',    emoji:'🔑', emojiStack:'👑', color:'#A8C9A0', name:'킹몽구 키링',    description:'왕관 쓴 몽구 아크릴 키링 50×50mm', price:'9000', buyLink:'' },
-  { id:4, featured:false, badge:'',    emoji:'📛', emojiStack:'🐾', color:'#E66B7A', name:'치즈태비 뱃지',  description:'금속 핀뱃지 · 가방·옷에 콕', price:'5000', buyLink:'' },
+  {id:1,featured:true, badge:'신상',emoji:'🐱',es:'🧀',color:'#F4A24C',name:'먹방 스티커팩', desc:'몽구의 시그니처 먹방 컷 6종 스티커',price:'4500',link:''},
+  {id:2,featured:false,badge:'',   emoji:'📮',es:'✉️',color:'#FFF4DE',name:'엽서 4종 세트', desc:'치즈 노을 · 산타 모자 · 식빵 · 시크한 표정',price:'2000',link:''},
+  {id:3,featured:false,badge:'',   emoji:'🔑',es:'👑',color:'#A8C9A0',name:'킹몽구 키링',   desc:'왕관 쓴 몽구 아크릴 키링 50×50mm',price:'9000',link:''},
+  {id:4,featured:false,badge:'',   emoji:'📛',es:'🐾',color:'#E66B7A',name:'치즈태비 뱃지', desc:'금속 핀뱃지 · 가방·옷에 콕',price:'5000',link:''},
 ];
 const DEFAULT_DIARY = [
-  { id:1, date:'2026.05.05', title:'🍪 새 먹방 촬영 — 어린이날 쿠키', content:'몽구가 쿠키 모양 빵을 한참 노려보다가 결국 한 입. 영상 곧 올라가요.' },
-  { id:2, date:'2026.04.28', title:'📦 키링 1차 입고',                  content:'아크릴 키링 30개 입고. 검수에서 7개 탈락… 다시 발주 넣었어요.' },
-  { id:3, date:'2026.04.20', title:'🎨 굿즈샵 v1 시안 완성',            content:'브랜드 컬러팔레트 7종 확정. 치즈 오렌지 + 따뜻한 종이 베이스.' },
+  {id:1,date:'2026.05.05',title:'🍪 새 먹방 촬영 — 어린이날 쿠키',content:'몽구가 쿠키 모양 빵을 한참 노려보다가 결국 한 입. 영상 곧 올라가요.'},
+  {id:2,date:'2026.04.28',title:'📦 키링 1차 입고',content:'아크릴 키링 30개 입고. 검수에서 7개 탈락… 다시 발주 넣었어요.'},
+  {id:3,date:'2026.04.20',title:'🎨 굿즈샵 v1 시안 완성',content:'브랜드 컬러팔레트 7종 확정. 치즈 오렌지 + 따뜻한 종이 베이스.'},
 ];
 
-// ── GitHub sync ──
-function toBase64(str) {
-  const bytes = new TextEncoder().encode(str);
-  let binary = '';
-  for (let i = 0; i < bytes.length; i++) binary += String.fromCharCode(bytes[i]);
-  return btoa(binary);
+// ── 비밀번호 (btoa, 동기, 어디서나 동작) ──
+function encodePw(pw) { return btoa(unescape(encodeURIComponent(pw + ':kg'))); }
+
+// ── localStorage ──
+function getProducts() { try { return JSON.parse(localStorage.getItem(K.PRODUCTS)) || DEFAULT_PRODUCTS; } catch { return DEFAULT_PRODUCTS; } }
+function saveProducts(a) { localStorage.setItem(K.PRODUCTS, JSON.stringify(a)); }
+function getDiary()    { try { return JSON.parse(localStorage.getItem(K.DIARY))    || DEFAULT_DIARY;    } catch { return DEFAULT_DIARY;    } }
+function saveDiary(a)  { localStorage.setItem(K.DIARY, JSON.stringify(a)); }
+function getToken()    { return localStorage.getItem(K.TOKEN) || ''; }
+function nextId(a)     { return a.length ? Math.max(...a.map(x=>x.id))+1 : 1; }
+function today()       { const d=new Date(); return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`; }
+
+// ── 토스트 ──
+let toastT;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(toastT);
+  toastT = setTimeout(() => el.classList.remove('show'), 2600);
 }
 
-function ghHeaders(token) {
-  return {
+// ── sync pill ──
+function setPill(state, label) {
+  const el = document.getElementById('syncPill');
+  el.className = 'sync-pill ' + state;
+  el.textContent = label;
+}
+
+// ── GitHub 동기화 ──
+function toBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = '';
+  for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+  return btoa(bin);
+}
+
+async function syncGH() {
+  const token = getToken();
+  if (!token) return;
+  setPill('busy', '↻ 배포 중...');
+  const payload = JSON.stringify({
+    products: getProducts().map(p => ({id:p.id,featured:p.featured,badge:p.badge,emoji:p.emoji,emojiStack:p.es,color:p.color,name:p.name,description:p.desc,price:p.price,buyLink:p.link})),
+    diary:    getDiary(),
+    updatedAt: new Date().toISOString(),
+  }, null, 2);
+
+  const hdrs = {
     'Authorization': `Bearer ${token}`,
     'Accept': 'application/vnd.github+json',
     'X-GitHub-Api-Version': '2022-11-28',
     'Content-Type': 'application/json',
   };
-}
-
-function setSyncBadge(state) {
-  const el = document.getElementById('syncBadge');
-  if (!el) return;
-  const map = { idle:'● 미연결', syncing:'↻ 배포 중...', ok:'✓ 배포됨', error:'✕ 오류' };
-  el.className = 'sync-badge ' + state;
-  el.textContent = map[state] || map.idle;
-}
-
-async function syncToGitHub() {
-  const token = localStorage.getItem(KEYS.GH_TOKEN);
-  if (!token) return;
-  setSyncBadge('syncing');
-  const payload = JSON.stringify({ products: getProducts(), diary: getDiary(), updatedAt: new Date().toISOString() }, null, 2);
-  const content = toBase64(payload);
   try {
-    // 현재 SHA 조회 (업데이트에 필요)
-    const getRes = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`, { headers: ghHeaders(token) });
     let sha;
-    if (getRes.ok) sha = (await getRes.json()).sha;
+    const get = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`, {headers: hdrs});
+    if (get.ok) sha = (await get.json()).sha;
 
-    const putRes = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`, {
-      method: 'PUT',
-      headers: ghHeaders(token),
-      body: JSON.stringify({ message: `관리자: 데이터 업데이트 (${new Date().toLocaleString('ko-KR')})`, content, branch: GH.branch, ...(sha ? { sha } : {}) }),
+    const put = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${GH.path}`, {
+      method: 'PUT', headers: hdrs,
+      body: JSON.stringify({
+        message: `관리자 업데이트 (${new Date().toLocaleString('ko-KR')})`,
+        content: toBase64(payload),
+        branch: GH.branch,
+        ...(sha ? {sha} : {}),
+      }),
     });
-    if (!putRes.ok) { const e = await putRes.json(); throw new Error(e.message); }
-    setSyncBadge('ok');
+    if (!put.ok) { const e = await put.json(); throw new Error(e.message); }
+    setPill('ok', '✓ 배포됨');
     toast('GitHub 배포 완료 🚀 (1~2분 후 전체 반영)');
-  } catch (err) {
-    setSyncBadge('error');
-    toast('배포 실패: ' + err.message);
-    console.error('[GitHub sync]', err);
+  } catch (e) {
+    setPill('err', '✕ 오류');
+    toast('배포 실패: ' + e.message);
   }
 }
 
-// ── helpers ──
-async function hashPw(pw) {
-  // crypto.subtle은 HTTPS에서만 동작 → btoa fallback 포함
-  if (crypto?.subtle) {
-    try {
-      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
-      return 'sha:' + Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-    } catch {}
-  }
-  return 'b64:' + btoa(unescape(encodeURIComponent(pw + ':mongu')));
-}
-function getProducts() { try { return JSON.parse(localStorage.getItem(KEYS.PRODUCTS)) || DEFAULT_PRODUCTS; } catch { return DEFAULT_PRODUCTS; } }
-function saveProducts(a) { localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(a)); }
-function getDiary()    { try { return JSON.parse(localStorage.getItem(KEYS.DIARY))    || DEFAULT_DIARY; }    catch { return DEFAULT_DIARY; } }
-function saveDiary(a)  { localStorage.setItem(KEYS.DIARY, JSON.stringify(a)); }
-function nextId(a)     { return a.length ? Math.max(...a.map(x=>x.id))+1 : 1; }
-function todayStr()    { const d=new Date(); return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`; }
-
-let toastTmr;
-function toast(msg) {
-  const el = document.getElementById('toast');
-  el.textContent = msg; el.classList.add('show');
-  clearTimeout(toastTmr);
-  toastTmr = setTimeout(()=>el.classList.remove('show'), 2400);
+// ── 로그인 ──
+function initPw() {
+  if (!localStorage.getItem(K.PW)) localStorage.setItem(K.PW, encodePw(DEFAULT_PW));
 }
 
-// ── auth ──
-(async () => {
-  const stored = localStorage.getItem(KEYS.PW);
-  // 기존 해시(prefix 없는 구형)는 초기화
-  if (!stored || (!stored.startsWith('sha:') && !stored.startsWith('b64:'))) {
-    localStorage.setItem(KEYS.PW, await hashPw(DEFAULT_PW));
-  }
-  updateTokenUI();
-  if (sessionStorage.getItem(KEYS.SESSION) === '1') showDash();
-})();
-
-document.getElementById('loginForm').addEventListener('submit', async e => {
+document.getElementById('loginForm').addEventListener('submit', e => {
   e.preventDefault();
   const pw = document.getElementById('pwInput').value;
-  const ok = (await hashPw(pw)) === localStorage.getItem(KEYS.PW);
-  if (ok) { sessionStorage.setItem(KEYS.SESSION,'1'); showDash(); }
-  else { document.getElementById('loginError').hidden=false; document.getElementById('pwInput').value=''; }
+  const ok = encodePw(pw) === localStorage.getItem(K.PW);
+  if (ok) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('dashboard').classList.add('show');
+    renderProducts();
+    renderDiary();
+    updateTokenUI();
+  } else {
+    document.getElementById('loginErr').style.display = 'block';
+    document.getElementById('pwInput').value = '';
+  }
 });
 
-document.getElementById('logoutBtn').addEventListener('click', () => {
-  sessionStorage.removeItem(KEYS.SESSION);
-  document.getElementById('loginScreen').hidden = false;
-  document.getElementById('dashboard').hidden   = true;
-  document.getElementById('loginError').hidden  = true;
+document.getElementById('btnLogout').addEventListener('click', () => {
+  document.getElementById('loginScreen').style.display = '';
+  document.getElementById('dashboard').classList.remove('show');
   document.getElementById('pwInput').value = '';
+  document.getElementById('loginErr').style.display = 'none';
 });
 
-function showDash() {
-  document.getElementById('loginScreen').hidden = true;
-  document.getElementById('dashboard').hidden   = false;
-  renderProducts(); renderDiary();
-}
-
-// ── tabs ──
+// ── 탭 ──
 document.querySelectorAll('.tab-btn[data-tab]').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('on'));
+    btn.classList.add('on');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('on');
   });
 });
 
-// ── products ──
-let editPid = null;
-
+// ── 상품 목록 ──
 function renderProducts() {
   const list = document.getElementById('productList');
   const products = getProducts();
-  if (!products.length) {
-    list.innerHTML = '<div class="empty-state"><div class="empty-icon">🛍</div><p>상품이 없어요. + 상품 추가를 눌러보세요.</p></div>';
-    return;
-  }
+  if (!products.length) { list.innerHTML = '<div class="empty">상품이 없어요. + 상품 추가를 눌러보세요.</div>'; return; }
   list.innerHTML = products.map(p => `
-    <div class="item-row">
-      <div class="item-emoji">${p.emoji}</div>
-      <div class="item-info">
-        <div class="item-name">${p.name}
-          ${p.badge ? `<span class="item-badge">${p.badge}</span>` : ''}
-          ${p.featured ? '<span class="item-badge featured">대표</span>' : ''}
+    <div class="row">
+      <div class="row-emoji">${p.emoji}</div>
+      <div class="row-info">
+        <div class="row-name">${p.name}
+          ${p.badge ? `<span class="badge">${p.badge}</span>` : ''}
+          ${p.featured ? '<span class="badge feat">대표</span>' : ''}
         </div>
-        <div class="item-desc">${p.description}</div>
+        <div class="row-desc">${p.desc}</div>
       </div>
-      <div class="item-price">₩${Number(p.price).toLocaleString()}</div>
-      <div class="item-actions">
+      <div class="row-price">₩${Number(p.price).toLocaleString()}</div>
+      <div class="row-acts">
         <button class="btn-edit" onclick="editProduct(${p.id})">편집</button>
-        <button class="btn-delete" onclick="deleteProduct(${p.id})">삭제</button>
+        <button class="btn-del" onclick="delProduct(${p.id})">삭제</button>
       </div>
     </div>
   `).join('');
 }
 
+let editPid = null;
 function openProductForm(p) {
-  document.getElementById('productFormTitle').textContent = p ? '상품 편집' : '새 상품 추가';
-  document.getElementById('productId').value   = p ? p.id : '';
-  document.getElementById('pName').value        = p ? p.name : '';
-  document.getElementById('pPrice').value       = p ? p.price : '';
-  document.getElementById('pDesc').value        = p ? p.description : '';
-  document.getElementById('pEmoji').value       = p ? p.emoji : '';
-  document.getElementById('pEmojiStack').value  = p ? (p.emojiStack||'') : '';
-  document.getElementById('pColor').value       = p ? (p.color||'#F4A24C') : '#F4A24C';
-  document.getElementById('pBadge').value       = p ? (p.badge||'') : '';
-  document.getElementById('pBuyLink').value     = p ? (p.buyLink||'') : '';
-  document.getElementById('pFeatured').checked  = p ? !!p.featured : false;
-  document.getElementById('productForm').hidden = false;
+  document.getElementById('pFormTitle').textContent = p ? '상품 편집' : '새 상품';
+  document.getElementById('pId').value      = p ? p.id : '';
+  document.getElementById('pName').value    = p ? p.name : '';
+  document.getElementById('pPrice').value   = p ? p.price : '';
+  document.getElementById('pDesc').value    = p ? p.desc : '';
+  document.getElementById('pEmoji').value   = p ? p.emoji : '';
+  document.getElementById('pEStack').value  = p ? (p.es||'') : '';
+  document.getElementById('pColor').value   = p ? (p.color||'#F4A24C') : '#F4A24C';
+  document.getElementById('pBadge').value   = p ? (p.badge||'') : '';
+  document.getElementById('pLink').value    = p ? (p.link||'') : '';
+  document.getElementById('pFeatured').checked = p ? !!p.featured : false;
+  document.getElementById('productForm').style.display = 'block';
   document.getElementById('pName').focus();
 }
 
-document.getElementById('btnAddProduct').addEventListener('click', () => { editPid=null; openProductForm(null); });
-document.getElementById('btnCancelProduct').addEventListener('click', () => { document.getElementById('productForm').hidden=true; editPid=null; });
+document.getElementById('btnNewProduct').addEventListener('click', () => { editPid = null; openProductForm(null); });
+document.getElementById('btnCancelProduct').addEventListener('click', () => { document.getElementById('productForm').style.display = 'none'; editPid = null; });
 
-window.editProduct = id => { editPid=id; openProductForm(getProducts().find(x=>x.id===id)); };
-window.deleteProduct = id => {
+window.editProduct = id => { editPid = id; openProductForm(getProducts().find(x => x.id === id)); };
+window.delProduct  = id => {
   if (!confirm('이 상품을 삭제할까요?')) return;
-  saveProducts(getProducts().filter(x=>x.id!==id));
-  renderProducts(); toast('삭제됐어요 🗑');
-  syncToGitHub();
+  saveProducts(getProducts().filter(x => x.id !== id));
+  renderProducts(); toast('삭제됐어요 🗑'); syncGH();
 };
 
 document.getElementById('btnSaveProduct').addEventListener('click', () => {
   const name  = document.getElementById('pName').value.trim();
   const price = document.getElementById('pPrice').value.trim();
-  if (!name||!price) { alert('상품명과 가격은 필수예요!'); return; }
+  if (!name || !price) { alert('상품명과 가격은 필수예요!'); return; }
   const products = getProducts();
   const item = {
-    id:          editPid || nextId(products),
+    id:       editPid || nextId(products),
     name, price,
-    description: document.getElementById('pDesc').value.trim(),
-    emoji:       document.getElementById('pEmoji').value.trim() || '📦',
-    emojiStack:  document.getElementById('pEmojiStack').value.trim(),
-    color:       document.getElementById('pColor').value,
-    badge:       document.getElementById('pBadge').value.trim(),
-    buyLink:     document.getElementById('pBuyLink').value.trim(),
-    featured:    document.getElementById('pFeatured').checked,
+    desc:     document.getElementById('pDesc').value.trim(),
+    emoji:    document.getElementById('pEmoji').value.trim() || '📦',
+    es:       document.getElementById('pEStack').value.trim(),
+    color:    document.getElementById('pColor').value,
+    badge:    document.getElementById('pBadge').value.trim(),
+    link:     document.getElementById('pLink').value.trim(),
+    featured: document.getElementById('pFeatured').checked,
   };
-  if (editPid) { const i=products.findIndex(x=>x.id===editPid); products[i]=item; }
+  if (editPid) { const i = products.findIndex(x => x.id === editPid); products[i] = item; }
   else { products.push(item); }
-  saveProducts(products);
   const wasEdit = !!editPid;
-  editPid=null;
-  document.getElementById('productForm').hidden=true;
-  renderProducts();
-  toast(wasEdit ? '수정됐어요 ✅' : '추가됐어요 🎉');
-  syncToGitHub();
+  saveProducts(products); editPid = null;
+  document.getElementById('productForm').style.display = 'none';
+  renderProducts(); toast(wasEdit ? '수정됐어요 ✅' : '추가됐어요 🎉'); syncGH();
 });
 
-// ── diary ──
-let editDid = null;
-
+// ── 일기 목록 ──
 function renderDiary() {
   const list = document.getElementById('diaryList');
   const diary = getDiary();
-  if (!diary.length) {
-    list.innerHTML = '<div class="empty-state"><div class="empty-icon">📔</div><p>일기가 없어요.</p></div>';
-    return;
-  }
+  if (!diary.length) { list.innerHTML = '<div class="empty">일기가 없어요.</div>'; return; }
   list.innerHTML = diary.map(d => `
-    <div class="diary-row">
-      <div class="diary-body">
-        <div class="diary-date">${d.date}</div>
-        <div class="diary-title">${d.title}</div>
-        <div class="diary-content">${d.content}</div>
+    <div class="drow">
+      <div class="drow-body">
+        <div class="drow-date">${d.date}</div>
+        <div class="drow-title">${d.title}</div>
+        <div class="drow-content">${d.content}</div>
       </div>
-      <div class="item-actions">
+      <div class="row-acts">
         <button class="btn-edit" onclick="editDiary(${d.id})">편집</button>
-        <button class="btn-delete" onclick="deleteDiary(${d.id})">삭제</button>
+        <button class="btn-del" onclick="delDiary(${d.id})">삭제</button>
       </div>
     </div>
   `).join('');
 }
 
+let editDid = null;
 function openDiaryForm(d) {
-  document.getElementById('diaryFormTitle').textContent = d ? '일기 편집' : '새 일기 추가';
-  document.getElementById('diaryId').value   = d ? d.id : '';
-  document.getElementById('dDate').value     = d ? d.date : todayStr();
-  document.getElementById('dTitle').value    = d ? d.title : '';
-  document.getElementById('dContent').value  = d ? d.content : '';
-  document.getElementById('diaryForm').hidden = false;
+  document.getElementById('dFormTitle').textContent = d ? '일기 편집' : '새 일기';
+  document.getElementById('dId').value      = d ? d.id : '';
+  document.getElementById('dDate').value    = d ? d.date : today();
+  document.getElementById('dTitle').value   = d ? d.title : '';
+  document.getElementById('dContent').value = d ? d.content : '';
+  document.getElementById('diaryForm').style.display = 'block';
   document.getElementById('dTitle').focus();
 }
 
-document.getElementById('btnAddDiary').addEventListener('click', () => { editDid=null; openDiaryForm(null); });
-document.getElementById('btnCancelDiary').addEventListener('click', () => { document.getElementById('diaryForm').hidden=true; editDid=null; });
+document.getElementById('btnNewDiary').addEventListener('click', () => { editDid = null; openDiaryForm(null); });
+document.getElementById('btnCancelDiary').addEventListener('click', () => { document.getElementById('diaryForm').style.display = 'none'; editDid = null; });
 
-window.editDiary = id => { editDid=id; openDiaryForm(getDiary().find(x=>x.id===id)); };
-window.deleteDiary = id => {
+window.editDiary = id => { editDid = id; openDiaryForm(getDiary().find(x => x.id === id)); };
+window.delDiary  = id => {
   if (!confirm('이 일기를 삭제할까요?')) return;
-  saveDiary(getDiary().filter(x=>x.id!==id));
-  renderDiary(); toast('삭제됐어요 🗑');
-  syncToGitHub();
+  saveDiary(getDiary().filter(x => x.id !== id));
+  renderDiary(); toast('삭제됐어요 🗑'); syncGH();
 };
 
 document.getElementById('btnSaveDiary').addEventListener('click', () => {
   const date    = document.getElementById('dDate').value.trim();
   const title   = document.getElementById('dTitle').value.trim();
   const content = document.getElementById('dContent').value.trim();
-  if (!date||!title) { alert('날짜와 제목은 필수예요!'); return; }
+  if (!date || !title) { alert('날짜와 제목은 필수예요!'); return; }
   const diary = getDiary();
-  const item = { id: editDid || nextId(diary), date, title, content };
-  if (editDid) { const i=diary.findIndex(x=>x.id===editDid); diary[i]=item; }
+  const item  = { id: editDid || nextId(diary), date, title, content };
+  if (editDid) { const i = diary.findIndex(x => x.id === editDid); diary[i] = item; }
   else { diary.unshift(item); }
-  saveDiary(diary);
   const wasEdit = !!editDid;
-  editDid=null;
-  document.getElementById('diaryForm').hidden=true;
-  renderDiary();
-  toast(wasEdit ? '수정됐어요 ✅' : '추가됐어요 🎉');
-  syncToGitHub();
+  saveDiary(diary); editDid = null;
+  document.getElementById('diaryForm').style.display = 'none';
+  renderDiary(); toast(wasEdit ? '수정됐어요 ✅' : '추가됐어요 🎉'); syncGH();
 });
 
-// ── settings: GitHub token ──
+// ── 설정: GitHub 토큰 ──
 function updateTokenUI() {
-  const stored = localStorage.getItem(KEYS.GH_TOKEN);
-  const msg = document.getElementById('ghConnectMsg');
-  const removeBtn = document.getElementById('btnRemoveToken');
-  const guide = document.getElementById('ghGuide');
-  if (stored) {
+  const has = !!getToken();
+  const msg = document.getElementById('ghMsg');
+  const del = document.getElementById('btnDelToken');
+  if (has) {
     msg.style.color = 'var(--sage)';
-    msg.textContent = '✅ 토큰이 연결되어 있어요. 저장할 때마다 자동 배포됩니다.';
-    removeBtn.style.display = 'inline-flex';
-    guide.style.display = 'none';
-    setSyncBadge('ok');
+    msg.textContent = '✅ 연결됨 — 저장할 때마다 자동 배포됩니다.';
+    del.style.display = 'inline-flex';
+    setPill('ok', '✓ 연결됨');
   } else {
     msg.textContent = '';
-    removeBtn.style.display = 'none';
-    guide.style.display = 'block';
-    setSyncBadge('idle');
+    del.style.display = 'none';
+    setPill('idle', '● 미연결');
   }
 }
 
 document.getElementById('btnSaveToken').addEventListener('click', () => {
   const val = document.getElementById('ghToken').value.trim();
-  const msg = document.getElementById('ghConnectMsg');
+  const msg = document.getElementById('ghMsg');
   if (!val) { msg.style.color='var(--strawberry)'; msg.textContent='토큰을 입력하세요.'; return; }
-  localStorage.setItem(KEYS.GH_TOKEN, val);
+  localStorage.setItem(K.TOKEN, val);
   document.getElementById('ghToken').value = '';
-  updateTokenUI();
-  toast('토큰이 저장됐어요 🔑');
+  updateTokenUI(); toast('토큰 저장됐어요 🔑');
 });
 
 document.getElementById('btnTestToken').addEventListener('click', async () => {
-  const token = document.getElementById('ghToken').value.trim() || localStorage.getItem(KEYS.GH_TOKEN);
-  const msg = document.getElementById('ghConnectMsg');
-  if (!token) { msg.style.color='var(--strawberry)'; msg.textContent='먼저 토큰을 입력하세요.'; return; }
+  const token = document.getElementById('ghToken').value.trim() || getToken();
+  const msg   = document.getElementById('ghMsg');
+  if (!token) { msg.style.color='var(--strawberry)'; msg.textContent='토큰을 먼저 입력하세요.'; return; }
   msg.style.color = 'var(--mocha)'; msg.textContent = '테스트 중...';
   try {
-    const res = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}`, { headers: ghHeaders(token) });
-    if (res.ok) { msg.style.color='var(--sage)'; msg.textContent='✅ 연결 성공! 저장 버튼을 눌러 적용하세요.'; }
-    else { const e=await res.json(); throw new Error(e.message); }
-  } catch (err) { msg.style.color='var(--strawberry)'; msg.textContent='❌ 실패: ' + err.message; }
+    const r = await fetch(`https://api.github.com/repos/${GH.owner}/${GH.repo}`, {
+      headers: { 'Authorization': `Bearer ${token}`, 'Accept': 'application/vnd.github+json' }
+    });
+    if (r.ok) { msg.style.color='var(--sage)'; msg.textContent='✅ 연결 성공! 저장 버튼으로 적용하세요.'; }
+    else { const e=await r.json(); throw new Error(e.message); }
+  } catch(e) { msg.style.color='var(--strawberry)'; msg.textContent='❌ 실패: '+e.message; }
 });
 
-document.getElementById('btnRemoveToken').addEventListener('click', () => {
-  if (!confirm('토큰을 삭제할까요? 자동 배포가 중단됩니다.')) return;
-  localStorage.removeItem(KEYS.GH_TOKEN);
-  updateTokenUI();
-  toast('토큰이 삭제됐어요');
+document.getElementById('btnDelToken').addEventListener('click', () => {
+  if (!confirm('토큰을 삭제할까요?')) return;
+  localStorage.removeItem(K.TOKEN); updateTokenUI(); toast('토큰 삭제됐어요');
 });
 
-// ── settings: password ──
-document.getElementById('btnChangePw').addEventListener('click', async () => {
-  const a = document.getElementById('newPw').value;
-  const b = document.getElementById('confirmPw').value;
+// ── 설정: 비밀번호 ──
+document.getElementById('btnChangePw').addEventListener('click', () => {
+  const a   = document.getElementById('newPw').value;
+  const b   = document.getElementById('confPw').value;
   const msg = document.getElementById('pwMsg');
   if (!a) { msg.style.color='var(--strawberry)'; msg.textContent='비밀번호를 입력하세요.'; return; }
-  if (a!==b) { msg.style.color='var(--strawberry)'; msg.textContent='비밀번호가 일치하지 않아요.'; return; }
-  localStorage.setItem(KEYS.PW, await hashPw(a));
+  if (a !== b) { msg.style.color='var(--strawberry)'; msg.textContent='비밀번호가 일치하지 않아요.'; return; }
+  localStorage.setItem(K.PW, encodePw(a));
   msg.style.color='var(--sage)'; msg.textContent='변경됐어요 ✅';
-  document.getElementById('newPw').value=''; document.getElementById('confirmPw').value='';
+  document.getElementById('newPw').value = ''; document.getElementById('confPw').value = '';
 });
 
-document.getElementById('btnExport').addEventListener('click', () => {
-  const data = { products: getProducts(), diary: getDiary(), exportedAt: new Date().toISOString() };
-  const json = JSON.stringify(data, null, 2);
-  const out = document.getElementById('exportOutput');
-  out.textContent = json; out.style.display='block';
-  navigator.clipboard?.writeText(json).then(()=>toast('클립보드에 복사됐어요 📋')).catch(()=>toast('위 JSON을 직접 복사하세요'));
-});
-
+// ── 설정: 초기화 ──
 document.getElementById('btnReset').addEventListener('click', () => {
-  if (!confirm('모든 상품·일기를 기본값으로 초기화할까요? 되돌릴 수 없어요.')) return;
-  localStorage.removeItem(KEYS.PRODUCTS); localStorage.removeItem(KEYS.DIARY);
+  if (!confirm('모든 상품·일기를 기본값으로 초기화할까요?')) return;
+  localStorage.removeItem(K.PRODUCTS); localStorage.removeItem(K.DIARY);
   renderProducts(); renderDiary(); toast('초기화됐어요 🔄');
 });
+
+// ── 시작 ──
+initPw();
 </script>
 </body>
 </html>
