@@ -324,10 +324,27 @@ body::before {
   margin-left: 6px; vertical-align: middle;
 }
 .about-mongu {
-  width: 140px; height: 154px;
+  width: 220px; height: auto;
   margin: 0 auto;
-  mix-blend-mode: multiply;
+  mix-blend-mode: screen;
+  display: block;
 }
+
+/* 킹몽구 카드 — 히어로처럼 어두운 배경 */
+.mongu-card {
+  background:
+    radial-gradient(circle at 65% 30%, #D98830 0%, #7A4A1E 45%, var(--bean) 100%);
+  border-color: transparent;
+  overflow: hidden;
+}
+.mongu-card h3 { color: var(--paper); }
+.mongu-card .age {
+  background: rgba(251,247,240,.15);
+  color: rgba(251,247,240,.65);
+}
+.mongu-card .facts { color: rgba(251,247,240,.72); }
+.mongu-card .facts li { border-bottom-color: rgba(251,247,240,.1); }
+.mongu-card .facts b  { color: var(--paper); }
 .facts {
   list-style: none; padding: 0; margin: 0;
   text-align: left;
