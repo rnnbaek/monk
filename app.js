@@ -146,7 +146,66 @@ document.addEventListener('click', (e) => {
   });
 })();
 
-// ----- 8) 현재 페이지 nav 활성 탭 표시 -----
+// ----- 8) 상품 · 일기 동적 렌더링 (관리자 localStorage 데이터 사용) -----
+const ADMIN_KEYS = { PRODUCTS: 'mongu_products', DIARY: 'mongu_diary' };
+
+const DEFAULT_PRODUCTS = [
+  { id:1, featured:true,  badge:'신상', emoji:'🐱', emojiStack:'🧀', color:'#F4A24C', name:'먹방 스티커팩',  description:'몽구의 시그니처 먹방 컷 6종 스티커', price:'4500', buyLink:'' },
+  { id:2, featured:false, badge:'',    emoji:'📮', emojiStack:'✉️', color:'#FFF4DE', name:'엽서 4종 세트',  description:'치즈 노을 · 산타 모자 · 식빵 · 시크한 표정', price:'2000', buyLink:'' },
+  { id:3, featured:false, badge:'',    emoji:'🔑', emojiStack:'👑', color:'#A8C9A0', name:'킹몽구 키링',    description:'왕관 쓴 몽구 아크릴 키링 50×50mm', price:'9000', buyLink:'' },
+  { id:4, featured:false, badge:'',    emoji:'📛', emojiStack:'🐾', color:'#E66B7A', name:'치즈태비 뱃지',  description:'금속 핀뱃지 · 가방·옷에 콕', price:'5000', buyLink:'' },
+];
+const DEFAULT_DIARY = [
+  { id:1, date:'2026.05.05', title:'🍪 새 먹방 촬영 — 어린이날 쿠키', content:'몽구가 쿠키 모양 빵을 한참 노려보다가 결국 한 입. 영상 곧 올라가요.' },
+  { id:2, date:'2026.04.28', title:'📦 키링 1차 입고',                  content:'아크릴 키링 30개 입고. 검수에서 7개 탈락… 다시 발주 넣었어요.' },
+  { id:3, date:'2026.04.20', title:'🎨 굿즈샵 v1 시안 완성',            content:'브랜드 컬러팔레트 7종 확정. 치즈 오렌지 + 따뜻한 종이 베이스.' },
+];
+
+(function setupShopRender() {
+  const grid = document.getElementById('goodsGrid');
+  if (!grid) return;
+  let products;
+  try { products = JSON.parse(localStorage.getItem(ADMIN_KEYS.PRODUCTS)) || DEFAULT_PRODUCTS; }
+  catch { products = DEFAULT_PRODUCTS; }
+
+  grid.innerHTML = products.map(p => `
+    <article class="good-card${p.featured ? ' featured' : ''} in">
+      ${p.badge ? `<span class="badge-new">${p.badge}</span>` : ''}
+      <div class="good-art" style="--bg:${p.color || '#F4A24C'}">
+        <span class="emoji">${p.emoji}</span>
+        ${p.emojiStack ? `<span class="emoji-stack">${p.emojiStack}</span>` : ''}
+      </div>
+      <div class="good-info">
+        <h3>${p.name}</h3>
+        <p>${p.description}</p>
+        <div class="good-bottom">
+          <span class="price">₩${Number(p.price).toLocaleString()}</span>
+          <a class="btn btn-primary btn-sm"
+             href="${p.buyLink || '#'}"
+             ${p.buyLink ? 'target="_blank" rel="noopener"' : `data-buy="${p.id}"`}>구매하기</a>
+        </div>
+      </div>
+    </article>
+  `).join('');
+})();
+
+(function setupDiaryRender() {
+  const feed = document.getElementById('diaryFeed');
+  if (!feed) return;
+  let diary;
+  try { diary = JSON.parse(localStorage.getItem(ADMIN_KEYS.DIARY)) || DEFAULT_DIARY; }
+  catch { diary = DEFAULT_DIARY; }
+
+  feed.innerHTML = diary.map(d => `
+    <article class="diary-item in">
+      <time>${d.date}</time>
+      <h4>${d.title}</h4>
+      <p>${d.content}</p>
+    </article>
+  `).join('');
+})();
+
+// ----- 9) 현재 페이지 nav 활성 탭 표시 -----
 (function setupNavActive() {
   const page = window.location.pathname.split('/').pop() || 'index.html';
   document.querySelectorAll('.topnav a').forEach((a) => {
@@ -157,7 +216,7 @@ document.addEventListener('click', (e) => {
   });
 })();
 
-// ----- 10) 작은 환영 로그 -----
+// ----- 11) 작은 환영 로그 -----
 console.log(
   '%c🧀 킹몽구 & 누나 v1 %c\n' +
   '시안 → 사이트 v1 빌드 · 1인 운영 굿즈샵',
