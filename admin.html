@@ -440,8 +440,14 @@ async function syncToGitHub() {
 
 // ── helpers ──
 async function hashPw(pw) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  // crypto.subtle은 HTTPS에서만 동작 → btoa fallback 포함
+  if (crypto?.subtle) {
+    try {
+      const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(pw));
+      return 'sha:' + Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    } catch {}
+  }
+  return 'b64:' + btoa(unescape(encodeURIComponent(pw + ':mongu')));
 }
 function getProducts() { try { return JSON.parse(localStorage.getItem(KEYS.PRODUCTS)) || DEFAULT_PRODUCTS; } catch { return DEFAULT_PRODUCTS; } }
 function saveProducts(a) { localStorage.setItem(KEYS.PRODUCTS, JSON.stringify(a)); }
@@ -460,7 +466,9 @@ function toast(msg) {
 
 // ── auth ──
 (async () => {
-  if (!localStorage.getItem(KEYS.PW)) {
+  const stored = localStorage.getItem(KEYS.PW);
+  // 기존 해시(prefix 없는 구형)는 초기화
+  if (!stored || (!stored.startsWith('sha:') && !stored.startsWith('b64:'))) {
     localStorage.setItem(KEYS.PW, await hashPw(DEFAULT_PW));
   }
   updateTokenUI();
