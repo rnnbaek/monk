@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#F4A24C" />
+  <meta name="description" content="한 번 들으면 못 잊는 킹몽구 CM송." />
+
+  <title>CM송 — 킹몽구 &amp; 누나</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&family=Roboto:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧀%3C/text%3E%3C/svg%3E" />
+</head>
+<body data-page="cmsong">
+
+<!-- ============ 상단 네비 ============ -->
+<header class="topbar" data-shrink>
+  <a class="brand" href="index.html" aria-label="킹몽구 홈">
+    <span class="brand-dot">🧀</span>
+    <span class="brand-name">킹몽구 <em>&amp; 누나</em></span>
+  </a>
+  <nav class="topnav" aria-label="페이지">
+    <a href="index.html">홈</a>
+    <a href="about.html">소개</a>
+    <a href="videos.html">먹방</a>
+    <a href="shop.html">굿즈샵</a>
+    <a href="cmsong.html">CM송</a>
+    <a href="diary.html">일기</a>
+  </nav>
+  <a class="topcta" href="shop.html">🛍 굿즈</a>
+</header>
+
+<main>
+
+<!-- ============ CM송 ============ -->
+<section class="section cmsong" id="cmsong">
+  <div class="section-head">
+    <span class="kicker">cm song · 몽구송</span>
+    <h2>한 번 들으면 <em>못 잊어요</em> 🎵</h2>
+  </div>
+
+  <div class="song-card">
+    <div class="vinyl" id="vinyl">
+      <div class="vinyl-disc">
+        <object type="image/svg+xml" data="./assets/mongu.svg" class="vinyl-label" tabindex="-1"></object>
+      </div>
+    </div>
+
+    <div class="song-body">
+      <h3>몽구 CM송 v0.1 <span class="demo">(데모)</span></h3>
+      <p class="song-credit">작사·작곡 누나 · 노래 누나 · 야옹 킹몽구</p>
+
+      <pre class="lyrics">
+🎵
+몽~구 몽~구 킹몽구
+오늘도 빵을 먹는 중
+한 입 두 입 세 입 네 입
+야~옹 (mmm-yummy)
+
+치즈태비 노란 털
+시크한 눈빛 하나로
+세상을 녹여버리는
+우리집 황제님 🧀
+      </pre>
+
+      <div class="song-controls">
+        <button class="play-btn" id="playSong" type="button" aria-label="CM송 재생/정지">
+          <span class="play-ico">▶</span>
+          <span class="play-label">재생</span>
+        </button>
+        <input class="volume" id="volume" type="range" min="0" max="1" step="0.05" value="0.6" aria-label="볼륨" />
+        <span class="bg-toggle">
+          <input type="checkbox" id="bgmToggle" />
+          <label for="bgmToggle">사이트 백그라운드로 깔기</label>
+        </span>
+      </div>
+
+      <p class="song-note">
+        💡 음원 파일은 <code>./assets/cm-song.mp3</code> 위치에 추가하면 작동해요.
+        지금은 데모용 placeholder 상태입니다.
+      </p>
+
+      <audio id="cmAudio" preload="none" loop>
+        <source src="./assets/cm-song.mp3" type="audio/mpeg" />
+      </audio>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- 우측 하단 떠있는 미니 음악 컨트롤 -->
+<div class="mini-music" id="miniMusic" hidden>
+  <button id="miniToggle" aria-label="음악 토글">🎵</button>
+</div>
+
+<!-- ============ 푸터 ============ -->
+<footer class="foot">
+  <div class="foot-top">
+    <div class="foot-brand">
+      <span class="brand-dot">🧀</span>
+      <span class="brand-name">킹몽구 <em>&amp; 누나</em></span>
+      <p class="foot-tag">치즈태비 ASMR 먹방 굿즈샵</p>
+    </div>
+    <div class="foot-links">
+      <a href="https://www.youtube.com/@cat.sister" target="_blank" rel="noopener">▶ 유튜브</a>
+      <a href="#" target="_blank" rel="noopener">📷 인스타그램</a>
+      <a href="#" target="_blank" rel="noopener">🛍 스마트스토어</a>
+      <a href="mailto:hello@example.com">✉️ 문의</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 킹몽구 & 누나 · 1인 사업자</span>
+    <span class="palette-strip" aria-label="브랜드 컬러팔레트">
+      <i style="background:#F4A24C"></i>
+      <i style="background:#FFF4DE"></i>
+      <i style="background:#FBF7F0"></i>
+      <i style="background:#E66B7A"></i>
+      <i style="background:#A8C9A0"></i>
+      <i style="background:#3B2A1F"></i>
+      <i style="background:#7A5A44"></i>
+    </span>
+  </div>
+</footer>
+
+<script src="./app.js" defer></script>
+</body>
+</html>

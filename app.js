@@ -146,7 +146,18 @@ document.addEventListener('click', (e) => {
   });
 })();
 
-// ----- 8) 작은 환영 로그 -----
+// ----- 8) 현재 페이지 nav 활성 탭 표시 -----
+(function setupNavActive() {
+  const page = window.location.pathname.split('/').pop() || 'index.html';
+  document.querySelectorAll('.topnav a').forEach((a) => {
+    const href = a.getAttribute('href');
+    if (href === page || (page === '' && href === 'index.html')) {
+      a.classList.add('active');
+    }
+  });
+})();
+
+// ----- 10) 작은 환영 로그 -----
 console.log(
   '%c🧀 킹몽구 & 누나 v1 %c\n' +
   '시안 → 사이트 v1 빌드 · 1인 운영 굿즈샵',
