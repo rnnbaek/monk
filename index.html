@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#F4A24C" />
+  <meta name="description" content="치즈태비 킹몽구의 ASMR 먹방 채널 공식 굿즈샵. 누나가 한 땀 한 땀 만든 작은 가게." />
+
+  <title>킹몽구 &amp; 누나 — 치즈태비 ASMR 먹방 굿즈샵</title>
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="킹몽구 & 누나" />
+  <meta property="og:description" content="치즈태비 ASMR 먹방 채널의 작은 굿즈샵 🐱🧀" />
+  <meta property="og:type" content="website" />
+
+  <!-- Fonts (유튜브 표준: Roboto + Noto Sans KR) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&family=Roboto:wght@400;500;700;900&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🧀%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+
+<!-- ============ 상단 떠있는 네비 ============ -->
+<header class="topbar" data-shrink>
+  <a class="brand" href="#top" aria-label="킹몽구 홈">
+    <span class="brand-dot">🧀</span>
+    <span class="brand-name">킹몽구 <em>&amp; 누나</em></span>
+  </a>
+  <nav class="topnav" aria-label="섹션">
+    <a href="#about">소개</a>
+    <a href="#videos">먹방</a>
+    <a href="#shop">굿즈샵</a>
+    <a href="#cmsong">CM송</a>
+    <a href="#diary">일기</a>
+  </nav>
+  <button class="topcta" type="button" data-scroll-to="#shop">🛍 굿즈</button>
+</header>
+
+<main id="top">
+
+<!-- ============ 1. 히어로 (영상 BG) ============ -->
+<section class="hero" id="hero">
+  <!-- 영상 백그라운드 (유튜브 임베드. 실제 영상 ID는 README 안내대로 교체) -->
+  <div class="hero-bg">
+    <iframe
+      id="bgvideo"
+      src=""
+      data-yt-id="REPLACE_WITH_YOUTUBE_ID"
+      title="몽구 영상 백그라운드"
+      allow="autoplay; encrypted-media"
+      tabindex="-1"
+      aria-hidden="true"
+      loading="lazy"
+    ></iframe>
+    <!-- 영상이 비어있을 때 보이는 폴백: 몽구 SVG + 따뜻한 그라데이션 -->
+    <div class="hero-fallback" aria-hidden="true">
+      <object class="hero-mongu" type="image/svg+xml" data="./assets/mongu.svg" tabindex="-1"></object>
+    </div>
+    <div class="hero-scrim"></div>
+    <div class="hero-grain"></div>
+  </div>
+
+  <div class="hero-tags">
+    <span class="tag tag-live">● LIVE 자동재생</span>
+    <span class="tag tag-mute" id="muteBadge">🔇 음소거 중</span>
+  </div>
+
+  <div class="hero-copy">
+    <span class="hero-badge">cat ASMR · 치즈태비 먹방 채널</span>
+    <h1>오늘도 <em>몽구</em>는<br>먹는 중 🍪</h1>
+    <p class="hero-sub">
+      치즈태비 <b>킹몽구</b>의 ASMR 먹방 채널,<br>
+      그리고 누나가 한 땀 한 땀 만드는 작은 굿즈샵.
+    </p>
+    <div class="hero-ctas">
+      <a class="btn btn-primary" href="#shop">🛍 굿즈샵 구경하기</a>
+      <a class="btn btn-ghost" href="#videos">▶︎ 먹방 보기</a>
+    </div>
+  </div>
+
+  <button class="hero-scroll" type="button" aria-label="아래로 스크롤" data-scroll-to="#about">
+    <span></span><span></span><span></span>
+  </button>
+</section>
+
+<!-- ============ 2. 소개 ============ -->
+<section class="section about" id="about">
+  <div class="section-head">
+    <span class="kicker">about · 소개</span>
+    <h2>안녕, 우린 <em>몽구</em>랑 <em>누나</em>야 🐱</h2>
+  </div>
+
+  <div class="about-grid">
+    <div class="about-card mongu-card">
+      <object class="about-mongu" type="image/svg+xml" data="./assets/mongu.svg" tabindex="-1"></object>
+      <h3>킹몽구 <span class="age">5살</span></h3>
+      <ul class="facts">
+        <li>🧀 <b>품종</b> 치즈태비 (오렌지 클래식 태비)</li>
+        <li>🍞 <b>특기</b> 식빵 굽기, 빵 ASMR</li>
+        <li>😶 <b>표정</b> 늘 살짝 무심함, 그래서 매력</li>
+        <li>👑 <b>별명</b> 킹몽구 (집사 한정 황제)</li>
+      </ul>
+    </div>
+
+    <div class="about-card sister-card">
+      <div class="sis-emoji">👩‍🎨</div>
+      <h3>누나 <span class="age">1인 운영</span></h3>
+      <p class="sis-bio">
+        몽구의 일상을 영상으로, 사진으로, 굿즈로 옮기는 사람.
+        촬영 · 편집 · 디자인 · 배송까지 전부 혼자 해요.
+        그래서 느릴 수 있지만, 한 땀 한 땀 정성껏 만듭니다 🐾
+      </p>
+      <div class="trust">
+        <div class="trust-item"><b>🎬 100+</b><span>업로드 영상</span></div>
+        <div class="trust-item"><b>🛍 4종</b><span>오리지널 굿즈</span></div>
+        <div class="trust-item"><b>📦 안전</b><span>국내 배송</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3. 먹방 영상 ============ -->
+<section class="section videos" id="videos">
+  <div class="section-head">
+    <span class="kicker">videos · 먹방</span>
+    <h2>몽구의 <em>ASMR 먹방</em> 🎬</h2>
+    <p class="section-sub">
+      유튜브 채널 <a href="https://www.youtube.com/@cat.sister" target="_blank" rel="noopener">@cat.sister</a>에서
+      더 많은 영상을 만나요.
+    </p>
+  </div>
+
+  <div class="video-grid">
+    <a class="video-card" data-yt="REPLACE_VIDEO_ID_1" href="https://www.youtube.com/@cat.sister" target="_blank" rel="noopener">
+      <div class="video-thumb"><span class="play">▶</span></div>
+      <div class="video-meta">
+        <span class="duration">0:15</span>
+        <h4>🐱 마시멜로 빵 먹방</h4>
+        <span class="views">조회수 73회</span>
+      </div>
+    </a>
+    <a class="video-card" data-yt="REPLACE_VIDEO_ID_2" href="https://www.youtube.com/@cat.sister" target="_blank" rel="noopener">
+      <div class="video-thumb"><span class="play">▶</span></div>
+      <div class="video-meta">
+        <span class="duration">1:47</span>
+        <h4>🎄 Cat Christmas December</h4>
+        <span class="views">조회수 123회</span>
+      </div>
+    </a>
+    <a class="video-card" data-yt="REPLACE_VIDEO_ID_3" href="https://www.youtube.com/@cat.sister" target="_blank" rel="noopener">
+      <div class="video-thumb"><span class="play">▶</span></div>
+      <div class="video-meta">
+        <span class="duration">0:16</span>
+        <h4>🎅 산타 진저브레드 쿠키맨</h4>
+        <span class="views">조회수 66회</span>
+      </div>
+    </a>
+    <a class="video-card" data-yt="REPLACE_VIDEO_ID_4" href="https://www.youtube.com/@cat.sister" target="_blank" rel="noopener">
+      <div class="video-thumb"><span class="play">▶</span></div>
+      <div class="video-meta">
+        <span class="duration">0:16</span>
+        <h4>🦌 크리스마스 루돌프 머핀</h4>
+        <span class="views">조회수 37회</span>
+      </div>
+    </a>
+  </div>
+
+  <a class="more-link" href="https://www.youtube.com/@cat.sister" target="_blank" rel="noopener">
+    유튜브 채널에서 더 보기 →
+  </a>
+</section>
+
+<!-- ============ 4. 굿즈샵 ============ -->
+<section class="section shop" id="shop">
+  <div class="section-head">
+    <span class="kicker">shop · 굿즈샵</span>
+    <h2>킹몽구를 <em>곁에 두는 법</em> 🛍</h2>
+    <p class="section-sub">한 땀 한 땀 만든 4종. 수량이 적어 빨리 사라져요.</p>
+  </div>
+
+  <div class="goods-grid">
+    <article class="good-card featured">
+      <span class="badge-new">신상</span>
+      <div class="good-art" style="--bg:#F4A24C">
+        <span class="emoji">🐱</span>
+        <span class="emoji-stack">🧀</span>
+      </div>
+      <div class="good-info">
+        <h3>먹방 스티커팩</h3>
+        <p>몽구의 시그니처 먹방 컷 6종 스티커</p>
+        <div class="good-bottom">
+          <span class="price">₩4,500</span>
+          <a class="btn btn-primary btn-sm" href="#" data-buy="sticker">구매하기</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="good-card">
+      <div class="good-art" style="--bg:#FFF4DE">
+        <span class="emoji">📮</span>
+        <span class="emoji-stack">✉️</span>
+      </div>
+      <div class="good-info">
+        <h3>엽서 4종 세트</h3>
+        <p>치즈 노을 · 산타 모자 · 식빵 · 시크한 표정</p>
+        <div class="good-bottom">
+          <span class="price">₩2,000</span>
+          <a class="btn btn-primary btn-sm" href="#" data-buy="postcard">구매하기</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="good-card">
+      <div class="good-art" style="--bg:#A8C9A0">
+        <span class="emoji">🔑</span>
+        <span class="emoji-stack">👑</span>
+      </div>
+      <div class="good-info">
+        <h3>킹몽구 키링</h3>
+        <p>왕관 쓴 몽구 아크릴 키링 50×50mm</p>
+        <div class="good-bottom">
+          <span class="price">₩9,000</span>
+          <a class="btn btn-primary btn-sm" href="#" data-buy="keyring">구매하기</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="good-card">
+      <div class="good-art" style="--bg:#E66B7A">
+        <span class="emoji">📛</span>
+        <span class="emoji-stack">🐾</span>
+      </div>
+      <div class="good-info">
+        <h3>치즈태비 뱃지</h3>
+        <p>금속 핀뱃지 · 가방·옷에 콕</p>
+        <div class="good-bottom">
+          <span class="price">₩5,000</span>
+          <a class="btn btn-primary btn-sm" href="#" data-buy="badge">구매하기</a>
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div class="shop-note">
+    <span>📦</span>
+    <p>
+      <b>주문 안내</b> · 평일 12시 이전 주문은 당일 발송 ·
+      포장은 친환경 종이 박스 · 1인 운영이라 답장이 1~2일 늦을 수 있어요 🙇‍♀️
+    </p>
+  </div>
+</section>
+
+<!-- ============ 5. CM송 ============ -->
+<section class="section cmsong" id="cmsong">
+  <div class="section-head">
+    <span class="kicker">cm song · 몽구송</span>
+    <h2>한 번 들으면 <em>못 잊어요</em> 🎵</h2>
+  </div>
+
+  <div class="song-card">
+    <div class="vinyl" id="vinyl">
+      <div class="vinyl-disc">
+        <object type="image/svg+xml" data="./assets/mongu.svg" class="vinyl-label" tabindex="-1"></object>
+      </div>
+    </div>
+
+    <div class="song-body">
+      <h3>몽구 CM송 v0.1 <span class="demo">(데모)</span></h3>
+      <p class="song-credit">작사·작곡 누나 · 노래 누나 · 야옹 킹몽구</p>
+
+      <pre class="lyrics">
+🎵
+몽~구 몽~구 킹몽구
+오늘도 빵을 먹는 중
+한 입 두 입 세 입 네 입
+야~옹 (mmm-yummy)
+
+치즈태비 노란 털
+시크한 눈빛 하나로
+세상을 녹여버리는
+우리집 황제님 🧀
+      </pre>
+
+      <div class="song-controls">
+        <button class="play-btn" id="playSong" type="button" aria-label="CM송 재생/정지">
+          <span class="play-ico">▶</span>
+          <span class="play-label">재생</span>
+        </button>
+        <input class="volume" id="volume" type="range" min="0" max="1" step="0.05" value="0.6" aria-label="볼륨" />
+        <span class="bg-toggle">
+          <input type="checkbox" id="bgmToggle" />
+          <label for="bgmToggle">사이트 백그라운드로 깔기</label>
+        </span>
+      </div>
+
+      <p class="song-note">
+        💡 음원 파일은 <code>./assets/cm-song.mp3</code> 위치에 추가하면 작동해요.
+        지금은 데모용 placeholder 상태입니다.
+      </p>
+
+      <audio id="cmAudio" preload="none" loop>
+        <source src="./assets/cm-song.mp3" type="audio/mpeg" />
+      </audio>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 6. 공방일기 ============ -->
+<section class="section diary" id="diary">
+  <div class="section-head">
+    <span class="kicker">diary · 공방일기</span>
+    <h2>몽구와 <em>오늘의 공방</em> 📔</h2>
+  </div>
+
+  <div class="diary-list">
+    <article class="diary-item">
+      <time>2026.05.05</time>
+      <h4>🍪 새 먹방 촬영 — 어린이날 쿠키</h4>
+      <p>몽구가 쿠키 모양 빵을 한참 노려보다가 결국 한 입. 영상 곧 올라가요.</p>
+    </article>
+    <article class="diary-item">
+      <time>2026.04.28</time>
+      <h4>📦 키링 1차 입고</h4>
+      <p>아크릴 키링 30개 입고. 검수에서 7개 탈락… 다시 발주 넣었어요.</p>
+    </article>
+    <article class="diary-item">
+      <time>2026.04.20</time>
+      <h4>🎨 굿즈샵 v1 시안 완성</h4>
+      <p>브랜드 컬러팔레트 7종 확정. 치즈 오렌지 + 따뜻한 종이 베이스.</p>
+    </article>
+  </div>
+
+  <a class="more-link" href="#">전체 일기 보기 →</a>
+</section>
+
+<!-- ============ 푸터 ============ -->
+<footer class="foot">
+  <div class="foot-top">
+    <div class="foot-brand">
+      <span class="brand-dot">🧀</span>
+      <span class="brand-name">킹몽구 <em>&amp; 누나</em></span>
+      <p class="foot-tag">치즈태비 ASMR 먹방 굿즈샵</p>
+    </div>
+    <div class="foot-links">
+      <a href="https://www.youtube.com/@cat.sister" target="_blank" rel="noopener">▶ 유튜브</a>
+      <a href="#" target="_blank" rel="noopener">📷 인스타그램</a>
+      <a href="#" target="_blank" rel="noopener">🛍 스마트스토어</a>
+      <a href="mailto:hello@example.com">✉️ 문의</a>
+    </div>
+  </div>
+  <div class="foot-bottom">
+    <span>© 2026 킹몽구 & 누나 · 1인 사업자</span>
+    <span class="palette-strip" aria-label="브랜드 컬러팔레트">
+      <i style="background:#F4A24C"></i>
+      <i style="background:#FFF4DE"></i>
+      <i style="background:#FBF7F0"></i>
+      <i style="background:#E66B7A"></i>
+      <i style="background:#A8C9A0"></i>
+      <i style="background:#3B2A1F"></i>
+      <i style="background:#7A5A44"></i>
+    </span>
+  </div>
+</footer>
+
+</main>
+
+<!-- 우측 하단 떠있는 미니 음악 컨트롤 -->
+<div class="mini-music" id="miniMusic" hidden>
+  <button id="miniToggle" aria-label="음악 토글">🎵</button>
+</div>
+
+<script src="./app.js" defer></script>
+</body>
+</html>
